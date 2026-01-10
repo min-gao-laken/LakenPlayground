@@ -98,8 +98,13 @@ public class BankAccountDriver {
     public void menuOption2() {
         System.out.print("Enter account number: ");
         int id = input.nextInt();
-        BankAccount acc = findAccount(id);
-        if (acc != null) System.out.println(acc.getLastName());
+        BankAccount account = findAccount(id);
+        if (account != null) {
+            System.out.println("Account Number: " + account.getAccountNumber());
+            System.out.println("Account Owner: " + account.getFirstName() + " " + account.getMiddleInit() + " " + account.getLastName());
+            System.out.println("Balance: " + account.getBalance());
+            System.out.println("Last Transaction: " + account.getLastTransaction());
+        }
         else System.out.println("Account not found.");
     }
 
