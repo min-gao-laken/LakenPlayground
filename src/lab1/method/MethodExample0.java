@@ -1,5 +1,6 @@
 package lab1.method;
 
+import org.jetbrains.annotations.TestOnly;
 import java.util.Random;
 
 /**
@@ -8,16 +9,26 @@ import java.util.Random;
  * @description Random number generation
  */
 public class MethodExample0 {
+
+    public static void TestVoid() {
+        System.out.println("print");
+    }
+
+    public static String TestString() {
+        return "haha";
+    }
+
     public static void main(String[] args) {
-
-        // Approach 1: Math.random(), [1, 100]
-        int randomNumber = (int) (Math.random() * 100) + 1;
-        System.out.println("Random number (1–100 inclusive): " + randomNumber);
-
-        // Approach 2
-        Random rand = new Random();
-        int randomNumber2 = rand.nextInt(100) + 1;
-        // nextInt(100) → [0, 99]
-        System.out.println("Random number (1–100 inclusive): " + randomNumber2);
+        TestVoid();
+//        System.out.println(TestString());
+//        // Approach 1: Math.random(), [1, 100]
+//        int randomNumber = (int) (Math.random() * 100) + 1;
+//        System.out.println("Random number (1–100 inclusive): " + randomNumber);
+//
+//        // Approach 2
+//        Random rand = new Random();
+//        int randomNumber2 = rand.nextInt(100) + 1;
+//        // nextInt(100) → [0, 99]
+//        System.out.println("Random number (1–100 inclusive): " + randomNumber2);
     }
 }
