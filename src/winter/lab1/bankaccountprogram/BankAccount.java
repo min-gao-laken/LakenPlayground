@@ -17,7 +17,7 @@ public class BankAccount {
     }
 
     // Make sure the parameters are passed correctly.
-    public BankAccount(int accountNumber, String firstName, String lastName, char middleInit,
+    public BankAccount(int getAccountNumber, String firstName, String lastName, char middleInit,
                        float balance, String lastTransaction) {
         this.accountNumber = accountNumber;
         this.firstName = firstName;
