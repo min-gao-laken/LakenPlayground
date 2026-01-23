@@ -15,10 +15,11 @@ public class Date {
     public Date() {
     }
 
-    public Date(int day, int month, int year) {
-        setDay(day);
-        setMonth(month);
+    public Date(int year, int month, int day) {
+        // change the date
         setYear(year);
+        setMonth(month);
+        setDay(day);
     }
 
     // getters and setters
@@ -64,7 +65,7 @@ public class Date {
 
     public String toString() {
 //        return "hello world!";
-        return day + "-" + month + "-" + year;
+        return year + "-" + month + "-" + day;
     }
 
 //    public static void main(String[] args) {

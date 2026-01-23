@@ -1,5 +1,7 @@
 package winter.lab1.composition;
 
+import winter.lab1.filehandler.FileHandler;
+
 import java.util.Scanner;
 
 /**
@@ -21,12 +23,14 @@ public class BankAccountDriver {
      * generate an array to store information for 5 accounts
      */
     public void getData() {
-        accounts = new BankAccount[5];
-        accounts[0] = new BankAccount(1001, "Danny", "Vito", 'D', 3200.50f, new Date(7, 9, 2023));
-        accounts[1] = new BankAccount(1002, "Eddi", "Ewhat", 'E', 4200.50f, new Date(10, 9, 2022));
-        accounts[2] = new BankAccount(1003, "Fendy", "Fwhat", 'F', 5200.50f, new Date(8, 9, 2021));
-        accounts[3] = new BankAccount(1004, "Geo", "Ewhat", 'G', 6200.50f, new Date(20, 9, 2020));
-        accounts[4] = new BankAccount(1005, "Halo", "Hwhat", 'H', 7200.50f, new Date(9, 9, 2019));
+        accounts = FileHandler.getData("233BankAccountTestData.txt");
+
+
+//        accounts[0] = new BankAccount(10011, "Danny", "Vito", 'D', 3200.50f, new Date(2023, 9, 1));
+//        accounts[1] = new BankAccount(10021, "Eddi", "Ewhat", 'E', 4200.50f, new Date(2022, 2, 2));
+//        accounts[2] = new BankAccount(10031, "Fendy", "Fwhat", 'F', 5200.50f, new Date(2024, 4, 3));
+//        accounts[3] = new BankAccount(10041, "Geo", "Ewhat", 'G', 6200.50f, new Date(2021, 6, 4));
+//        accounts[4] = new BankAccount(10051, "Halo", "Hwhat", 'H', 7200.50f, new Date(2025, 8, 5));
 //        System.out.println(accounts[0].getLastTransaction()); // to call toString()
     }
 
@@ -43,7 +47,8 @@ public class BankAccountDriver {
         System.out.println("4. Deposit into account by account number");
         System.out.println("5. Withdraw from account by account number");
         System.out.println("6. Transfer from one account to another");
-        System.out.println("7. Exit");
+        System.out.println("7. Enter new BankAccount");
+        System.out.println("999. Exit");
         System.out.print("Choice: ");
 
         int choice = input.nextInt();
@@ -77,6 +82,9 @@ public class BankAccountDriver {
                 menuOption6();
                 break;
             case 7:
+                menuOption7();
+                break;
+            case 999:
                 System.out.println("Exit.");
                 break;
             default:
@@ -123,7 +131,6 @@ public class BankAccountDriver {
 
     /**
      * option 3: modify target account information by index
-     * <p>
      * step 1: get target account
      * step 2: use a switch statement to select the corresponding option
      * step 3: enter the new information
@@ -211,20 +218,19 @@ public class BankAccountDriver {
          * Change the date edit functionality so it asks for month, day and year separately
          * (i.e. you the user is prompted for, and enters day, month year in sequence).
          */
-
-        System.out.print("Enter last transaction date: Day: ");
-        int day = input.nextInt();
+        System.out.print("Enter last transaction date: Year: ");
+        int year = input.nextInt();
         input.nextLine();
 
         System.out.print("Enter last transaction date: Month: ");
         int month = input.nextInt();
         input.nextLine();
 
-        System.out.print("Enter last transaction date: Year: ");
-        int year = input.nextInt();
+        System.out.print("Enter last transaction date: Day: ");
+        int day = input.nextInt();
         input.nextLine();
 
-        Date date = new Date(day, month, year);
+        Date date = new Date(year, month, day);
         account.deposit(amount, date);
     }
 
@@ -281,7 +287,7 @@ public class BankAccountDriver {
         int year = input.nextInt();
         input.nextLine();
 
-        Date date = new Date(day, month, year);
+        Date date = new Date(year, month, day);
         account.withdraw(amount, date);
     }
 
@@ -346,10 +352,56 @@ public class BankAccountDriver {
         int year = input.nextInt();
         input.nextLine();
 
-        Date date = new Date(day, month, year);
+        Date date = new Date(year, month, day);
 
         // transfer(float amount, BankAccount receiver, String date)
         sender.transfer(amount, receiver, date);
+    }
+
+    /**
+     * option 7: Enter new BankAccount
+     */
+
+    public void menuOption7() {
+        // 1. Get a new bank account from the keyboard.
+        int accountNumber = 1009;
+
+        System.out.println("1. Please enter first name");
+        String firstName = input.nextLine();
+        System.out.println("2. Please enter last Name");
+        String lastName = input.nextLine();
+        System.out.println("3. Please enter middle init");
+        char middleInit = input.next().charAt(0);
+
+        System.out.println("4. Please enter balance");
+        float balance = input.nextFloat();
+
+        System.out.println("5. Please enter last transaction year");
+        int year = input.nextInt();
+        input.nextLine();
+        System.out.println("6. Please enter last transaction month");
+        int month = input.nextInt();
+        input.nextLine();
+        System.out.println("7. Please enter last transaction day");
+        int day = input.nextInt();
+        input.nextLine();
+
+        Date lastTransaction = new Date(year, month, day);
+
+        // 2. Create a new array, 1 cell bigger than the current array (call it tempAccounts).
+        BankAccount[] tempAccounts = new BankAccount[9];
+        //3. Use ArrayCopy to copy the old data to the new array.
+        System.arraycopy(accounts, 0, tempAccounts,
+                0, 8);
+        //4. Add the new account to the end of the array.
+        tempAccounts[8] = new BankAccount(accountNumber, firstName, lastName, middleInit, balance, lastTransaction);
+//        tempAccounts[8] = new BankAccount(1009, "Halo", "Hwhat", 'H', 7200.50f, new Date(2025, 8, 5));
+
+        //5. Assign the new array to the old reference: accounts = tempAccounts.
+        accounts = tempAccounts;
+
+        // write the data to file
+        FileHandler.save(accounts);
     }
 
     public static void main(String[] args) {
@@ -359,6 +411,6 @@ public class BankAccountDriver {
         do {
             choice = driver.showMenu();
             driver.executeChoice(choice);
-        } while (choice != 7);
+        } while (choice != 999);
     }
 }

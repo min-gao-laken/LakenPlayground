@@ -22,7 +22,18 @@ public class BankAccount {
         setLastName(lastName);
         setMiddleInit(middleInit);
         setBalance(balance);
-        setLastTransaction(lastTransaction.day, lastTransaction.month, lastTransaction.year);
+        setLastTransaction(lastTransaction.year, lastTransaction.month, lastTransaction.day);
+    }
+
+    public String writeAsRecord() {
+        String result = "";
+        result = accountNumber + " " + firstName + " " + lastName + " " +
+                middleInit + " " +
+                balance + " " +
+                lastTransaction.getYear() + " " +
+                lastTransaction.getMonth() + " " +
+                lastTransaction.getDay();
+        return result;
     }
 
     // getters and setters
@@ -73,8 +84,8 @@ public class BankAccount {
         return lastTransaction;
     }
 
-    public void setLastTransaction(int day, int month, int year) {
-        this.lastTransaction = new Date(day, month, year);
+    public void setLastTransaction(int year, int month, int day) {
+        this.lastTransaction = new Date(year, month, day);
     }
 
     /**
