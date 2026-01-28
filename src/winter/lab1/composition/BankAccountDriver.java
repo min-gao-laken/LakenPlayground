@@ -1,5 +1,6 @@
 package winter.lab1.composition;
 
+import winter.lab1.derivation.Customer;
 import winter.lab1.filehandler.FileHandler;
 
 import java.util.Scanner;
@@ -24,6 +25,9 @@ public class BankAccountDriver {
      */
     public void getData() {
         accounts = FileHandler.getData("233BankAccountTestData.txt");
+
+//        accounts[0] = new BankAccount(1001, new Customer(101, "Danny",
+//                "Vito", 'D'), 3200.50f, new Date(2023, 9, 7));
 
 
 //        accounts[0] = new BankAccount(10011, "Danny", "Vito", 'D', 3200.50f, new Date(2023, 9, 1));
@@ -101,7 +105,12 @@ public class BankAccountDriver {
         System.out.println("You have chosen option 1");
         for (BankAccount account : accounts) {
             System.out.println("Account Number: " + account.getAccountNumber());
-            System.out.println("Account Owner: " + account.getFirstName() + " " + account.getMiddleInit() + " " + account.getLastName());
+            System.out.println("Customer ID: " + account.getCustomer().getCustomerId());
+//            System.out.println("Account Owner: " + account.getFirstName() + " " + account.getMiddleInit() + " " + account.getLastName());
+            System.out.println("Account Owner: " + account.getCustomer().getFirstName()
+                    + " " + account.getCustomer().getMiddleInit()
+                    + " " + account.getCustomer().getLastName()
+            );
             System.out.println("Balance: " + account.getBalance());
             System.out.println("Last Transaction: " + account.getLastTransaction());
             System.out.println("----");
@@ -124,7 +133,12 @@ public class BankAccountDriver {
 
         BankAccount account = accounts[index];
         System.out.println("Account Number: " + account.getAccountNumber());
-        System.out.println("Account Owner: " + account.getFirstName() + " " + account.getMiddleInit() + " " + account.getLastName());
+        System.out.println("Customer ID: " + account.getCustomer().getCustomerId());
+//        System.out.println("Account Owner: " + account.getFirstName() + " " + account.getMiddleInit() + " " + account.getLastName());
+        System.out.println("Account Owner: " + account.getCustomer().getFirstName()
+                + " " + account.getCustomer().getMiddleInit()
+                + " " + account.getCustomer().getLastName()
+        );
         System.out.println("Balance: " + account.getBalance());
         System.out.println("Last Transaction: " + account.getLastTransaction());
     }
@@ -147,6 +161,7 @@ public class BankAccountDriver {
         }
 
         BankAccount account = accounts[index];
+        System.out.println("0. Customer ID");
         System.out.println("1. First Name");
         System.out.println("2. Last Name");
         System.out.println("3. Middle Initial");
@@ -156,17 +171,23 @@ public class BankAccountDriver {
         input.nextLine();
 
         switch (field) {
+            case 0:
+                System.out.print("Enter new customer ID: ");
+                account.getCustomer().setCustomerId(input.nextInt());
+                input.nextLine();
+                break;
             case 1:
                 System.out.print("Enter new first name: ");
-                account.setFirstName(input.nextLine());
+                account.getCustomer().setFirstName(input.nextLine());
                 break;
             case 2:
                 System.out.print("Enter new last name: ");
-                account.setLastName(input.nextLine());
+                account.getCustomer().setLastName(input.nextLine());
                 break;
             case 3:
                 System.out.print("Enter new middle initial: ");
-                account.setMiddleInit(input.next().charAt(0));
+                account.getCustomer().setMiddleInit(input.next().charAt(0));
+//                account.setMiddleInit(input.next().charAt(0));
                 input.nextLine();
                 break;
             case 4:
@@ -366,6 +387,10 @@ public class BankAccountDriver {
         // 1. Get a new bank account from the keyboard.
         int accountNumber = 1009;
 
+        System.out.println("0. Please enter customer ID");
+        int customerID = input.nextInt();
+        input.nextLine();
+
         System.out.println("1. Please enter first name");
         String firstName = input.nextLine();
         System.out.println("2. Please enter last Name");
@@ -387,6 +412,7 @@ public class BankAccountDriver {
         input.nextLine();
 
         Date lastTransaction = new Date(year, month, day);
+        Customer customer = new Customer(customerID, firstName, lastName, middleInit);
 
         // 2. Create a new array, 1 cell bigger than the current array (call it tempAccounts).
         BankAccount[] tempAccounts = new BankAccount[9];
@@ -394,8 +420,9 @@ public class BankAccountDriver {
         System.arraycopy(accounts, 0, tempAccounts,
                 0, 8);
         //4. Add the new account to the end of the array.
-        tempAccounts[8] = new BankAccount(accountNumber, firstName, lastName, middleInit, balance, lastTransaction);
+//        tempAccounts[8] = new BankAccount(accountNumber, firstName, lastName, middleInit, balance, lastTransaction);
 //        tempAccounts[8] = new BankAccount(1009, "Halo", "Hwhat", 'H', 7200.50f, new Date(2025, 8, 5));
+        tempAccounts[8] = new BankAccount(accountNumber, customer, balance, lastTransaction);
 
         //5. Assign the new array to the old reference: accounts = tempAccounts.
         accounts = tempAccounts;

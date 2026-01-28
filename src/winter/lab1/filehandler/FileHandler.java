@@ -2,6 +2,7 @@ package winter.lab1.filehandler;
 
 import winter.lab1.composition.BankAccount;
 import winter.lab1.composition.Date;
+import winter.lab1.derivation.Customer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -35,16 +36,24 @@ public class FileHandler {
             for (int i = 0; i < numAccounts; i++) {
                 // read the data from the file
                 int accountNum = input.nextInt();
-                String firstName = input.next();
-                String lastName = input.next();
-                char init = input.next().charAt(0);
+//                String firstName = input.next();
+//                String lastName = input.next();
+//                char init = input.next().charAt(0);
                 float balance = input.nextFloat();
 
                 Date transactionDate = new Date(input.nextInt(), //day
                         input.nextInt(),// month
                         input.nextInt()); // year
 
-                accounts[i] = new BankAccount(accountNum, firstName, lastName, init, balance, transactionDate);
+                Customer customer = new Customer(input.nextInt(), // customer ID
+                        input.next(), // first name
+                        input.next(), // last name
+                        input.next().charAt(0) // middle init
+                );
+
+                accounts[i] = new BankAccount(accountNum, customer, balance, transactionDate);
+
+//                accounts[i] = new BankAccount(accountNum, firstName, lastName, init, balance, transactionDate);
             }
             // crete an account
 

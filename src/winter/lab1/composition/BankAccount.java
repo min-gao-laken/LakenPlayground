@@ -1,5 +1,7 @@
 package winter.lab1.composition;
 
+import winter.lab1.derivation.Customer;
+
 /**
  * @author Laken
  * @date 2026-01-14
@@ -12,6 +14,7 @@ public class BankAccount {
     private char middleInit;
     private float balance;
     private Date lastTransaction;
+    private Customer customer;
 
     public BankAccount() {
     }
@@ -25,14 +28,37 @@ public class BankAccount {
         setLastTransaction(lastTransaction.year, lastTransaction.month, lastTransaction.day);
     }
 
+    public BankAccount(int accountNumber, Customer customer, float balance, Date lastTransaction) {
+        setAccountNumber(accountNumber);
+
+//        setAccountNumber(customer.getCustomerId());
+//        setFirstName(customer.getFirstName());
+//        setLastName(customer.getLastName());
+//        setMiddleInit(customer.getMiddleInit());
+
+        setCustomer(customer);
+// TODO: why does the following statement not work?
+//        customer.setCustomerId(customer.getCustomerId());
+//        customer.setFirstName(customer.getFirstName());
+//        customer.setLastName(customer.getLastName());
+//        customer.setMiddleInit(customer.getMiddleInit());
+
+        setBalance(balance);
+        setLastTransaction(lastTransaction.year, lastTransaction.month, lastTransaction.day);
+    }
+
     public String writeAsRecord() {
         String result = "";
-        result = accountNumber + " " + firstName + " " + lastName + " " +
-                middleInit + " " +
+//        format: 1001 3200.5 2023 9 7 10011 TESTING2 Vito D
+        result = accountNumber +
                 balance + " " +
                 lastTransaction.getYear() + " " +
                 lastTransaction.getMonth() + " " +
-                lastTransaction.getDay();
+                lastTransaction.getDay() + " " +
+                customer.getCustomerId() + " " +
+                customer.getFirstName() + " " +
+                customer.getMiddleInit() + " " +
+                customer.getLastName();
         return result;
     }
 
@@ -144,6 +170,16 @@ public class BankAccount {
     public String toString() {
         return getFirstName() + " " + getLastName();
     }
+
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+
 //    public static void main(String[] args) {
 //
 //    }
