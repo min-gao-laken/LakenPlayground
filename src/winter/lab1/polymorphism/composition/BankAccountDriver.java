@@ -1,5 +1,6 @@
 package winter.lab1.polymorphism.composition;
 
+import winter.lab1.polymorphism.ChequingAccount;
 import winter.lab1.polymorphism.derivation.Customer;
 import winter.lab1.polymorphism.filehandler.FileHandler;
 
@@ -422,8 +423,8 @@ public class BankAccountDriver {
         //4. Add the new account to the end of the array.
 //        tempAccounts[8] = new BankAccount(accountNumber, firstName, lastName, middleInit, balance, lastTransaction);
 //        tempAccounts[8] = new BankAccount(1009, "Halo", "Hwhat", 'H', 7200.50f, new Date(2025, 8, 5));
-        tempAccounts[8] = new BankAccount(accountNumber, customer, balance, lastTransaction);
-
+//        tempAccounts[8] = new BankAccount(accountNumber, customer, balance, lastTransaction);
+        tempAccounts[8] = new ChequingAccount(accountNumber, customer, balance, lastTransaction);
         //5. Assign the new array to the old reference: accounts = tempAccounts.
         accounts = tempAccounts;
 
