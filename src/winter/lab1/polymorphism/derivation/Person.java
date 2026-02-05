@@ -1,4 +1,4 @@
-package winter.lab1.derivation;
+package winter.lab1.polymorphism.derivation;
 
 /**
  * @author Laken

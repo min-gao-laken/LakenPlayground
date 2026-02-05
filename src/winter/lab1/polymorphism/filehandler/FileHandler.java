@@ -1,14 +1,15 @@
-package winter.lab1.filehandler;
+package winter.lab1.polymorphism.filehandler;
 
-import winter.lab1.composition.BankAccount;
-import winter.lab1.composition.Date;
-import winter.lab1.derivation.Customer;
+
+import winter.lab1.polymorphism.composition.BankAccount;
+import winter.lab1.polymorphism.composition.Date;
+import winter.lab1.polymorphism.derivation.Customer;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
-import java.util.Scanner;
 import java.io.IOException;
+import java.util.Scanner;
 
 /**
  * @author Laken

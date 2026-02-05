@@ -1,6 +1,7 @@
-package winter.lab1.composition;
+package winter.lab1.polymorphism.composition;
 
-import winter.lab1.derivation.Customer;
+
+import winter.lab1.polymorphism.derivation.Customer;
 
 /**
  * @author Laken
