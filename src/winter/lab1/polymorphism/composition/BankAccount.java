@@ -8,7 +8,7 @@ import winter.lab1.polymorphism.derivation.Customer;
  * @date 2026-01-14
  * @description
  */
-public class BankAccount {
+public abstract class BankAccount {
     private int accountNumber;
     private String firstName;
     private String lastName;
@@ -108,6 +108,10 @@ public class BankAccount {
         this.lastTransaction = new Date(year, month, day);
     }
 
+    public void setLastTransaction(Date lastTransaction) {
+        this.lastTransaction = new Date(lastTransaction.getYear(), lastTransaction.getMonth(), lastTransaction.getDay());
+    }
+
     public Customer getCustomer() {
         return customer;
     }
@@ -141,15 +145,16 @@ public class BankAccount {
      * @param amount
      * @param lastTransaction
      */
-    public void withdraw(float amount, Date lastTransaction) {
-        if (amount > 0 && amount <= balance) {
-            balance -= amount;
-            this.lastTransaction = lastTransaction;
-            System.out.println("Withdraw successful. New balance: " + balance);
-        } else {
-            System.out.println("Invalid value.");
-        }
-    }
+//    public void withdraw(float amount, Date lastTransaction) {
+//        if (amount > 0 && amount <= balance) {
+//            balance -= amount;
+//            this.lastTransaction = lastTransaction;
+//            System.out.println("Withdraw successful. New balance: " + balance);
+//        } else {
+//            System.out.println("Invalid value.");
+//        }
+//    }
+    public abstract void withdraw(float amount, Date lastTransaction);
 
     /**
      * transfer should use withdraw and deposit functions
@@ -171,6 +176,10 @@ public class BankAccount {
 
     public String toString() {
         return getFirstName() + " " + getLastName();
+    }
+
+    public String accountType() {
+        return "";
     }
 
 }

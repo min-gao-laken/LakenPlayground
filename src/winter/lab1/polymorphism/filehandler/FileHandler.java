@@ -1,6 +1,7 @@
 package winter.lab1.polymorphism.filehandler;
 
 
+import winter.lab1.polymorphism.ChequingAccount;
 import winter.lab1.polymorphism.composition.BankAccount;
 import winter.lab1.polymorphism.composition.Date;
 import winter.lab1.polymorphism.derivation.Customer;
@@ -51,7 +52,7 @@ public class FileHandler {
                         input.next().charAt(0) // middle init
                 );
 
-                accounts[i] = new BankAccount(accountNum, customer, balance, transactionDate);
+                accounts[i] = new ChequingAccount(accountNum, customer, balance, transactionDate);
 
 //                accounts[i] = new BankAccount(accountNum, firstName, lastName, init, balance, transactionDate);
             }
