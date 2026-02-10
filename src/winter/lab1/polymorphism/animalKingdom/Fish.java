@@ -5,7 +5,7 @@ package winter.lab1.polymorphism.animalKingdom;
  * @date 2026-02-03
  * @description
  */
-public class Fish extends Animal {
+public class Fish extends Animal implements Noisy{
     public Fish() {
     }
 

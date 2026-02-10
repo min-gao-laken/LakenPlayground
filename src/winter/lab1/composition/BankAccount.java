@@ -144,7 +144,7 @@ public class BankAccount {
         if (amount > 0 && amount <= balance) {
             balance -= amount;
             this.lastTransaction = lastTransaction;
-            System.out.println("Withdraw successful. New balance: " + balance);
+            System.out.println(customer.getCustomerId() + ": withdraw successful. New balance: " + balance);
         } else {
             System.out.println("Invalid value.");
         }

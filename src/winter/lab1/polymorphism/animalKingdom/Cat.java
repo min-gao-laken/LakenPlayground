@@ -5,7 +5,7 @@ package winter.lab1.polymorphism.animalKingdom;
  * @date 2026-02-03
  * @description
  */
-public class Cat extends Animal {
+public class Cat extends Animal implements Noisy {
     public Cat() {
     }
 
@@ -13,7 +13,7 @@ public class Cat extends Animal {
         super(name);
     }
 
-//    @Override
+    //    @Override
     public void makeNoise() {
         System.out.println(getName() + ": Meow");
     }

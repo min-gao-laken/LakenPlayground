@@ -55,3 +55,6 @@ public class ChequingAccount extends BankAccount {
         return "ChequingAccount#";
     }
 }
+
+
+//Customer has bank account, bank account does not have a customer (-3)

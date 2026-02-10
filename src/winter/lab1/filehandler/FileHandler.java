@@ -40,11 +40,13 @@ public class FileHandler {
 //                char init = input.next().charAt(0);
                 float balance = input.nextFloat();
 
-                Date transactionDate = new Date(input.nextInt(), //day
+                Date transactionDate = new Date(
+                        input.nextInt(), //day
                         input.nextInt(),// month
                         input.nextInt()); // year
 
-                Customer customer = new Customer(input.nextInt(), // customer ID
+                Customer customer = new Customer(
+                        input.nextInt(), // customer ID
                         input.next(), // first name
                         input.next(), // last name
                         input.next().charAt(0) // middle init

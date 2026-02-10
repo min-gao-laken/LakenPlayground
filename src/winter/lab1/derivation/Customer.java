@@ -11,6 +11,7 @@ public class Customer extends Person {
     private int customerId;
 
     private BankAccount account;
+
     // constructor
     public Customer() {
     }
@@ -37,9 +38,15 @@ public class Customer extends Person {
      * @return customer and person information in the format of the txt file
      */
     public String writeAsRecord() {
-        String result = "";
-//        getFirstName()
-        return result;
+        return account.getAccountNumber() + " " +
+                account.getBalance() + " " +
+                account.getLastTransaction().getYear() + " " +
+                account.getLastTransaction().getMonth() + " " +
+                account.getLastTransaction().getDay() + " " +
+                account.getCustomer().getCustomerId() + " " +
+                account.getCustomer().getFirstName() + " " +
+                account.getCustomer().getLastName() + " " +
+                account.getCustomer().getMiddleInit();
     }
 
 

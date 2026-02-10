@@ -8,7 +8,7 @@ import winter.lab1.polymorphism.derivation.Customer;
  * @date 2026-01-14
  * @description
  */
-public abstract class BankAccount {
+public abstract class BankAccount implements Comparable {
     private int accountNumber;
     private String firstName;
     private String lastName;
@@ -49,6 +49,8 @@ public abstract class BankAccount {
                 lastTransaction.getYear() + " " +
                 lastTransaction.getMonth() + " " +
                 lastTransaction.getDay() + " " +
+
+
                 customer.getCustomerId() + " " +
                 customer.getFirstName() + " " +
                 customer.getMiddleInit() + " " +
@@ -182,4 +184,18 @@ public abstract class BankAccount {
         return "";
     }
 
+    // sort the account by account number
+    public int compareTo(Object o) {
+        if (o instanceof BankAccount account) {
+            if (this.accountNumber > account.accountNumber) {
+                return 1;
+            } else if (this.accountNumber < account.accountNumber) {
+                return -1;
+            } else {
+                return 0;
+            }
+        } else {
+            return 0;
+        }
+    }
 }

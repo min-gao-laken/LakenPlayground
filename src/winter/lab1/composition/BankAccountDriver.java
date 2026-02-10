@@ -161,7 +161,7 @@ public class BankAccountDriver {
         }
 
         BankAccount account = accounts[index];
-        System.out.println("0. Customer ID");
+//        System.out.println("0. Customer ID");
         System.out.println("1. First Name");
         System.out.println("2. Last Name");
         System.out.println("3. Middle Initial");
@@ -171,11 +171,11 @@ public class BankAccountDriver {
         input.nextLine();
 
         switch (field) {
-            case 0:
-                System.out.print("Enter new customer ID: ");
-                account.getCustomer().setCustomerId(input.nextInt());
-                input.nextLine();
-                break;
+//            case 0:
+//                System.out.print("Enter new customer ID: ");
+//                account.getCustomer().setCustomerId(input.nextInt());
+//                input.nextLine();
+//                break;
             case 1:
                 System.out.print("Enter new first name: ");
                 account.getCustomer().setFirstName(input.nextLine());
@@ -187,7 +187,6 @@ public class BankAccountDriver {
             case 3:
                 System.out.print("Enter new middle initial: ");
                 account.getCustomer().setMiddleInit(input.next().charAt(0));
-//                account.setMiddleInit(input.next().charAt(0));
                 input.nextLine();
                 break;
             case 4:

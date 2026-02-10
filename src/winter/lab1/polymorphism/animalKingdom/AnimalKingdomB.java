@@ -24,11 +24,18 @@ public class AnimalKingdomB {
         animals[2] = new Dog("Wolf");
         animals[3] = new Cat("Lion");
 
+        Noisy[] noisyAnimal = new Noisy[4]; // todo
+        noisyAnimal[0] = new Fish("Bass");
+        noisyAnimal[1] = new Cat("Tiger");
+        noisyAnimal[2] = new Dog("Wolf");
+        noisyAnimal[3] = new Cat("Lion");
+
+
 //        Animal a1 = new Animal("Elephant"); // 'Animal' is abstract; cannot be instantiated
         Animal a1 = new Fish("Koi"); // it works
 //        a1.makeNoise();
 
-        for (int i = 0; i < animals.length; i++) {
+        for (int i = 0; i < noisyAnimal.length; i++) {
             animals[i].makeNoise();
 //            animals[i].purr(); it does not work
 

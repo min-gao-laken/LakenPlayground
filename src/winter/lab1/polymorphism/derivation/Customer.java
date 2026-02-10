@@ -1,6 +1,7 @@
 package winter.lab1.polymorphism.derivation;
 
 
+import winter.lab1.interfacesinclassb.Widget;
 import winter.lab1.polymorphism.composition.BankAccount;
 
 /**
@@ -8,10 +9,9 @@ import winter.lab1.polymorphism.composition.BankAccount;
  * @date 2026-01-27
  * @description
  */
-public class Customer extends Person {
+public class Customer extends Person implements Comparable {
     private int customerId;
 
-    private BankAccount account;
     // constructor
     public Customer() {
     }
@@ -53,4 +53,19 @@ public class Customer extends Person {
         return getFirstName() + ", " + getMiddleInit() + ", " + getLastName() + ".";
     }
 
+
+    public int compareTo(Object o) {
+        if (o instanceof Customer customer) {
+            if (this.customerId > customer.customerId) {
+                return 1;
+            } else if (this.customerId < customer.customerId) {
+                return -1;
+            } else {
+                return 0;
+            }
+        }
+        else {
+            return 0;
+        }
+    }
 }
