@@ -1,0 +1,31 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Login</title>
+  <style>
+    body { font-family: "Segoe UI", sans-serif; max-width: 420px; margin: 60px auto; }
+    h1 { font-size: 22px; margin-bottom: 20px; }
+    .row { margin-bottom: 12px; }
+    label { display: inline-block; width: 80px; }
+    input { padding: 6px 8px; width: 250px; }
+    button { padding: 8px 12px; }
+  </style>
+</head>
+<body>
+  <h1>Library System - Login</h1>
+  <form method="post" action="/login/">
+    {% csrf_token %}
+    <div class="row">
+      <label>Account</label>
+      <input type="text" name="number" required />
+    </div>
+    <div class="row">
+      <label>Password</label>
+      <input type="password" name="password" required />
+    </div>
+    <button type="submit">Sign In</button>
+  </form>
+</body>
+</html>

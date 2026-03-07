@@ -1,0 +1,37 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Edit Book</title>
+  <style>
+    body { font-family: "Segoe UI", sans-serif; max-width: 720px; margin: 40px auto; }
+    .row { margin-bottom: 12px; }
+    label { display: inline-block; width: 90px; }
+    input, select { padding: 6px 8px; width: 260px; }
+    .error { color: #b00020; }
+  </style>
+</head>
+<body>
+  <h1>Edit Book</h1>
+  <p><a href="/book_list/">Back to List</a></p>
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+  <form method="post" action="/edit_book/">
+    {% csrf_token %}
+    <input type="hidden" name="id" value="{{ book_obj.id }}" />
+    <div class="row"><label>Title</label><input type="text" name="name" value="{{ book_obj.name }}" required /></div>
+    <div class="row"><label>Price</label><input type="number" name="price" step="0.01" min="0" value="{{ book_obj.price }}" required /></div>
+    <div class="row"><label>Inventory</label><input type="number" name="inventory" min="0" value="{{ book_obj.inventory }}" required /></div>
+    <div class="row"><label>Sales</label><input type="number" name="sale_num" min="0" value="{{ book_obj.sale_num }}" /></div>
+    <div class="row">
+      <label>Publisher</label>
+      <select name="publisher_id" required>
+        {% for p in publisher_list %}
+        <option value="{{ p.id }}" {% if p.id == book_obj.publisher_id %}selected{% endif %}>{{ p.publisher_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit">Save</button>
+  </form>
+</body>
+</html>

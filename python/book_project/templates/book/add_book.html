@@ -1,0 +1,38 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Add Book</title>
+  <style>
+    body { font-family: "Segoe UI", sans-serif; max-width: 720px; margin: 40px auto; }
+    h1 { font-size: 22px; margin-bottom: 16px; }
+    .row { margin-bottom: 12px; }
+    label { display: inline-block; width: 90px; }
+    input, select { padding: 6px 8px; width: 260px; }
+    button { padding: 8px 12px; }
+    .error { color: #b00020; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Add Book</h1>
+  <p><a href="/book_list/">Book List</a> | <a href="/publisher_list/">Publisher List</a> | <a href="/author_list/">Author List</a></p>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <form method="post" action="/add_book/">{% csrf_token %}
+    <div class="row"><label>Title</label><input type="text" name="name" required /></div>
+    <div class="row"><label>Price</label><input type="number" name="price" step="0.01" min="0" required /></div>
+    <div class="row"><label>Inventory</label><input type="number" name="inventory" min="0" required /></div>
+    <div class="row"><label>Sales</label><input type="number" name="sale_num" min="0" value="0" /></div>
+    <div class="row">
+      <label>Publisher</label>
+      <select name="publisher_id" required>
+        <option value="">Select a publisher</option>
+        {% for publisher in publisher_list %}
+        <option value="{{ publisher.id }}">{{ publisher.publisher_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit">Save</button>
+  </form>
+</body>
+</html>

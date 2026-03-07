@@ -1,0 +1,25 @@
+﻿<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Add Author</title>
+<style>body{font-family:"Segoe UI",sans-serif;max-width:900px;margin:40px auto}.row{margin-bottom:12px}label{display:inline-block;width:90px}input{padding:6px 8px;width:260px}.error{color:#b00020}.book-list{columns:2}</style>
+</head>
+<body>
+  <h1>Add Author</h1>
+  <p><a href="/author_list/">Author List</a> | <a href="/book_list/">Book List</a> | <a href="/publisher_list/">Publisher List</a></p>
+  {% if error %}<p class="error">{{ error }}</p>{% endif %}
+  <form method="post" action="/add_author/">{% csrf_token %}
+    <div class="row"><label>Name</label><input type="text" name="name" required /></div>
+    <div class="row">
+      <label>Books</label>
+      <div class="book-list">
+        {% for b in book_obj_list %}
+        <div><label><input type="checkbox" name="book_ids" value="{{ b.id }}" /> {{ b.name }}</label></div>
+        {% empty %}
+        <div>No books available.</div>
+        {% endfor %}
+      </div>
+    </div>
+    <button type="submit">Save</button>
+  </form>
+</body>
+</html>
