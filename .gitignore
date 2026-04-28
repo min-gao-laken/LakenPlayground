@@ -28,3 +28,8 @@ bin/
 
 ### Mac OS ###
 .DS_Store
+/ASP.NET/Practicew3schools/packages/
+/ASP.NET/Practicew3schools/.vs/
+**/obj/
+**/node_modules/
+**/PLAYGROUND_GUIDE.md

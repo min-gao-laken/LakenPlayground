@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playground</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, sans-serif;
+            margin: 0;
+            background: #f5f7fb;
+            color: #0f172a;
+        }
+        .page {
+            max-width: 960px;
+            margin: 24px auto;
+            padding: 0 16px;
+        }
+        .card {
+            background: #fff;
+            border: 1px solid #dbe3ef;
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+        h1, h2 {
+            margin: 0 0 12px;
+        }
+        ul {
+            margin-top: 6px;
+        }
+        input, select, textarea, button {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #c8d3e1;
+            border-radius: 8px;
+            margin-top: 6px;
+        }
+        button {
+            background: #0f172a;
+            color: #fff;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+        .muted {
+            color: #475569;
+            font-size: 14px;
+        }
+        pre {
+            background: #0b1220;
+            color: #e2e8f0;
+            padding: 10px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+        @media (max-width: 760px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<main class="page">
+    <section class="card">
+        <h1>Project Playground</h1>
+        <div class="muted">目标：用最小闭环练习你项目里真正用到的技术（Django API、Model/Migration、协同过滤、前后端联调）。</div>
+    </section>
+
+    <section class="card">
+        <h2>Roadmap</h2>
+        {% for item in roadmap %}
+            <div style="margin-bottom: 10px;">
+                <strong>{{ item.title }}</strong>
+                <div class="muted">{{ item.goal }}</div>
+                <ul>
+                    {% for checkpoint in item.checkpoints %}
+                        <li>{{ checkpoint }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endfor %}
+    </section>
+
+    <section class="card">
+        <h2>Practice Task API</h2>
+        <div class="grid">
+            <div>
+                <label>Title</label>
+                <input id="task-title" placeholder="例如：完成 books API 的分页">
+            </div>
+            <div>
+                <label>Topic</label>
+                <select id="task-topic">
+                    <option value="django_model">Django Model</option>
+                    <option value="django_api">Django API</option>
+                    <option value="react_axios">React + Axios</option>
+                    <option value="sql_migration">SQL + Migration</option>
+                    <option value="algorithm">Algorithm</option>
+                </select>
+            </div>
+        </div>
+        <label>Notes</label>
+        <textarea id="task-notes" rows="3" placeholder="记录你做了什么、遇到了什么错误"></textarea>
+        <button onclick="createTask()">Create Task</button>
+        <button onclick="loadTasks()">Refresh Tasks</button>
+        <pre id="task-output">click "Refresh Tasks" to load</pre>
+    </section>
+
+    <section class="card">
+        <h2>Recommendation Lab</h2>
+        <div class="grid">
+            <div>
+                <label>Reader ID</label>
+                <input id="reader-id" type="number" min="1" value="1">
+            </div>
+            <div>
+                <label>Top K Users</label>
+                <input id="top-k" type="number" min="1" max="50" value="5">
+            </div>
+        </div>
+        <button onclick="runLab()">Run Algorithm Debug</button>
+        <pre id="lab-output">click "Run Algorithm Debug" to load</pre>
+    </section>
+</main>
+
+<script>
+    async function loadTasks() {
+        const res = await fetch('/playground/api/tasks/');
+        const data = await res.json();
+        document.getElementById('task-output').textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function createTask() {
+        const payload = {
+            title: document.getElementById('task-title').value,
+            topic: document.getElementById('task-topic').value,
+            notes: document.getElementById('task-notes').value,
+            status: 'todo'
+        };
+        const res = await fetch('/playground/api/tasks/', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        document.getElementById('task-output').textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function runLab() {
+        const readerId = document.getElementById('reader-id').value;
+        const topK = document.getElementById('top-k').value;
+        const res = await fetch(`/playground/api/recommendation-lab/?reader_id=${readerId}&top_k_users=${topK}&limit=5`);
+        const data = await res.json();
+        document.getElementById('lab-output').textContent = JSON.stringify(data, null, 2);
+    }
+</script>
+</body>
+</html>
