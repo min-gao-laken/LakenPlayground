@@ -1,11 +1,16 @@
 ﻿from django.db import models
-
+from django.utils import timezone
 
 class Manager(models.Model):
+    class Role(models.TextChoices):
+        ADMIN = 'admin', 'Admin'
+        ANALYST = 'analyst', 'Analyst'
+
     id = models.AutoField(primary_key=True)
     number = models.CharField(max_length=32)
     password = models.CharField(max_length=32)
     name = models.CharField(max_length=32)
+    role = models.CharField(max_length=16, choices=Role.choices, default=Role.ADMIN)
 
     class Meta:
         db_table = 'manager'
@@ -38,3 +43,14 @@ class Author(models.Model):
 
     class Meta:
         db_table = 'author'
+
+
+class BorrowRecord(models.Model):
+    id = models.AutoField(primary_key=True)
+    book = models.ForeignKey(to='Book', on_delete=models.CASCADE, related_name='borrow_records')
+    borrowed_on = models.DateField(default=timezone.now)
+    quantity = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        db_table = 'borrow_record'
+        ordering = ['-borrowed_on', '-id']

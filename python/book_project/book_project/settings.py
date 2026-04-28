@@ -12,7 +12,7 @@ SECRET_KEY = 'django-insecure-m)o7aao8z#ls@wzxvjze8cje%!=ylaj#l@egb_d+6par=m-j3w
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
 INSTALLED_APPS = [
@@ -22,10 +22,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
+    'rest_framework',
     'manager.apps.ManagerConfig',
+    'circulation.apps.CirculationConfig',
+    'playground.apps.PlaygroundConfig',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -35,7 +40,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'manager.urls'
+# ROOT_URLCONF = 'manager.urls'
+ROOT_URLCONF = 'book_project.urls'
 
 TEMPLATES = [
     {
@@ -99,3 +105,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 STATIC_URL = 'static/'
+
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:5173',
+    'http://127.0.0.1:5173',
+]
+
+CORS_ALLOW_CREDENTIALS = True
