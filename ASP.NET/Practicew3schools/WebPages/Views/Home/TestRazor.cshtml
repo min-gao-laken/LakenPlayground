@@ -1,0 +1,67 @@
+﻿
+@{
+    ViewBag.Title = "TestRazor";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*测试ViewBag 里的数据：从controller传到view*@
+<p>@ViewBag.message</p>
+
+<h2>TestRazor</h2>
+
+
+
+
+<!-- Single statement block -->@{ var myMessage = "Hello World"; }
+<!-- Inline expression or variable -->
+<p>The value of myMessage is: @myMessage</p>
+<!--	Multi-statement block -->@{
+    var greeting = "Welcome to our site!";
+    var weekDay = DateTime.Now.DayOfWeek;
+    var greetingMessage = greeting + " Today is: " + weekDay;
+}<p>The greeting is: @greetingMessage</p>
+
+
+@{
+
+    var txt = "";
+    if (DateTime.Now.Hour > 12)
+    {
+        txt = "Good Evening!";
+    }
+    else
+    {
+        txt = "Good Morning!";
+    }
+}
+<p>The message is @txt</p>
+
+@*// Using data types:*@
+@{
+    string greetingString = "Welcome to RUNOOB.COM";
+    int counter = 103;
+    DateTime today = DateTime.Today;
+}
+<p>@greetingString | @counter | @today </p>
+
+
+@*循环和数组*@
+@{
+    string[] cars = { "Volvo", "BMW", "Ford", "Mazda" };}
+<p>
+    @for (int i = 0; i < cars.Length; i++)
+    {
+        @cars[i];<text> </text>
+        @: <h2>For this "@:", treat it as html</h2>
+    }
+</p>
+
+@*可以正常显示，但是是编译器自动识别了，不推荐这么写*@
+@{<h2>222</h2> }
+
+@*@{
+    for(int i=0; i<3; i++) {
+        @cars[i] + " " // 报错！因为在 for 的循环体内，它又是纯 C# 环境了
+    }
+}*@
+
