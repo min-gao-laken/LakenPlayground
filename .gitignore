@@ -32,4 +32,32 @@ bin/
 /ASP.NET/Practicew3schools/.vs/
 **/obj/
 **/node_modules/
+**/Scripts
+**/Content
 **/PLAYGROUND_GUIDE.md
+
+## --- Visual Studio ---
+.vs/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## --- (Build Output) ---
+obj/
+
+## --- (Local DB) ---
+*.mdf
+*.ldf
+
+## --- NuGet ---
+packages/
+!packages/repositories.config
+
+## --- others ---
+*.dtbcache.json
+*.tmp

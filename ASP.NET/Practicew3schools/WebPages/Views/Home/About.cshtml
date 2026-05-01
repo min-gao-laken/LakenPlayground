@@ -1,0 +1,19 @@
+﻿@{
+    ViewBag.Title = "About";
+}
+<main aria-labelledby="title">
+    <h2 id="title">@ViewBag.Title.</h2>
+    <h3>@ViewBag.Message</h3>
+
+    <p>Use this area to provide additional information.</p>
+</main>
+
+
+<!-- Single statement block -->@{ var myMessage = "Hello World"; }
+<!-- Inline expression or variable -->
+<p>The value of myMessage is: @myMessage</p>
+<!--	Multi-statement block -->@{
+    var greeting = "Welcome to our site!";
+    var weekDay = DateTime.Now.DayOfWeek;
+    var greetingMessage = greeting + " Today is: " + weekDay;
+}<p>The greeting is: @greetingMessage</p>
