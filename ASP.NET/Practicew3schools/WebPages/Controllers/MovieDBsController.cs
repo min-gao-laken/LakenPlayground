@@ -36,16 +36,18 @@ namespace WebPages.Controllers
         }
 
         // GET: MovieDBs/Create
+        // 这个方法负责返回一个空白的 HTML 表单给用户看
         public ActionResult Create()
         {
             return View();
         }
 
         // POST: MovieDBs/Create
+        // 这个方法负责接收用户填完后提交过来的数据
         // To protect from overposting attacks, enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
+        [ValidateAntiForgeryToken] // 安全检查，防止跨站请求伪造
         public ActionResult Create([Bind(Include = "ID,Title,Description")] MovieDB movieDB)
         {
             if (ModelState.IsValid)
@@ -122,6 +124,29 @@ namespace WebPages.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        // 1. 访问路径将会是 /MovieDBs/Search
+        [HttpGet] // 明确告诉系统：这个方法只响应 GET 请求
+        public ActionResult Search(string movieName)
+        {
+            // 这里的 movieName 会自动接收 URL 里的参数，例如 ?movieName=Inception
+            ViewBag.Message = "正在搜索的电影是：" + movieName;
+
+            var results = db.Movies.Where(m => m.Title.Contains(movieName)).ToList();
+            return View(results);
+            //return View(); // 这行代码会去找名为 Search.cshtml 的视图文件
+        }
+
+        [HttpPost]
+        public ActionResult Search(string movieName, string description)
+        {
+            ViewBag.Message = $"正在搜索的电影是：{movieName}，描述包含：{description}";
+            // 把搜索词传回页面，方便在搜索框里保留刚才输入的字
+            ViewBag.LastSearch = movieName;
+            ViewBag.LastDescription = description;
+            var results = db.Movies.Where(m => m.Title.Contains(movieName) && m.Description.Contains(description)).ToList();
+            return View(results);
         }
     }
 }

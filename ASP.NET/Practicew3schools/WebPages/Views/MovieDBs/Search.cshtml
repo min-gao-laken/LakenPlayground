@@ -1,0 +1,38 @@
+﻿
+@{
+    ViewBag.Title = "Search";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<h2>@ViewBag.Title</h2>
+<p>@ViewBag.Message</p>
+
+
+@* 使用 Html.BeginForm，它默认会发送 POST 请求 *@
+@using (Html.BeginForm("Search", "MovieDBs", FormMethod.Post))
+{
+    <div class="form-group">
+        <label>输入电影名称：</label>
+        @* name 属性必须叫 movieName，和 Controller 里的参数名一致 *@
+        <input type="text" name="movieName" class="form-control" value="@ViewBag.LastSearch" />
+        <input type="text" name="description" class="form-control" value="@ViewBag.LastDescription" />
+        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">点击搜索</button>
+    </div>
+}
+
+<hr />
+
+@* 下面是显示结果的部分 *@
+<table class="table">
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@item.Title</td>
+            <td>@Html.ActionLink("详情", "Details", new { id = item.ID })</td>
+        </tr>
+    }
+</table>
+
+<!-- 也可以加一个返回列表的链接 -->
+@Html.ActionLink("返回电影列表", "Index")
