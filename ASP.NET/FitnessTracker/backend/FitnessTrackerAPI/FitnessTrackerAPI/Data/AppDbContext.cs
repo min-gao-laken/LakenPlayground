@@ -9,5 +9,7 @@ namespace FitnessTrackerAPI.Data
        : base(options) { }
 
         public DbSet<Workout> Workouts { get; set; }
+        public DbSet<Exercise> Exercises { get; set; }
+        public DbSet<SetRecord> SetRecords { get; set; }
     }
 }

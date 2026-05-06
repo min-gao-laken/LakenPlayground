@@ -1,11 +1,16 @@
 using FitnessTrackerAPI.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    // Handle circular references in JSON serialization
+    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+});
 
-builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
@@ -39,4 +44,3 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-

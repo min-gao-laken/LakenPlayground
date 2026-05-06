@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FitnessTrackerAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260502205839_Init")]
+    [Migration("20260502225445_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -24,6 +24,23 @@ namespace FitnessTrackerAPI.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("FitnessTrackerAPI.Models.Exercise", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Exercises");
+                });
 
             modelBuilder.Entity("FitnessTrackerAPI.Models.Workout", b =>
                 {
