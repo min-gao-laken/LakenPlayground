@@ -18,6 +18,14 @@ builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Register repository and service
+builder.Services.AddScoped<FitnessTrackerAPI.Repositories.IWorkoutRepository, FitnessTrackerAPI.Repositories.WorkoutRepository>();
+builder.Services.AddScoped<FitnessTrackerAPI.Services.IWorkoutService, FitnessTrackerAPI.Services.WorkoutService>();
+builder.Services.AddScoped<FitnessTrackerAPI.Repositories.IExerciseRepository, FitnessTrackerAPI.Repositories.ExerciseRepository>();
+builder.Services.AddScoped<FitnessTrackerAPI.Services.IExerciseService, FitnessTrackerAPI.Services.ExerciseService>();
+builder.Services.AddScoped<FitnessTrackerAPI.Repositories.ISetRecordRepository, FitnessTrackerAPI.Repositories.SetRecordRepository>();
+builder.Services.AddScoped<FitnessTrackerAPI.Services.ISetRecordService, FitnessTrackerAPI.Services.SetRecordService>();
+
 // ⭐ Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

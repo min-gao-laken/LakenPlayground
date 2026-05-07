@@ -7,51 +7,45 @@ namespace FitnessTrackerAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ExercisesController : Controller
+    public class ExercisesController : ControllerBase
     {
         //public IActionResult Index()
         //{
         //    return View();
         //}
-        private readonly AppDbContext _context;
+        private readonly FitnessTrackerAPI.Services.IExerciseService _service;
 
-        public ExercisesController(AppDbContext context)
+        public ExercisesController(FitnessTrackerAPI.Services.IExerciseService service)
         {
-            _context = context;
+            _service = service;
+        }
+
+        // GET: api/exercises/{id}
+        // Get exercise by id
+        [HttpGet("{id}")]
+        public async Task<ActionResult<ExerciseDto>> GetById(int id, CancellationToken ct)
+        {
+            var dto = await _service.GetByIdAsync(id, ct);
+            if (dto == null) return NotFound();
+            return Ok(dto);
         }
 
         // POST: api/exercises/{exerciseId}/sets
         // Adds a new set to an exercise
         [HttpPost("{exerciseId}/sets")]
-        public async Task<IActionResult> AddSet([FromRoute] int exerciseId, [FromBody] SetRecord set)
+        public async Task<IActionResult> AddSet([FromRoute] int exerciseId, [FromBody] SetRecord set, CancellationToken ct)
         {
-            var exercise = await _context.Exercises
-                .Include(e => e.Sets)
-                .FirstOrDefaultAsync(e => e.Id == exerciseId);
-
-            if (exercise == null)
-                return NotFound();
-
-            exercise.Sets.Add(set);
-            await _context.SaveChangesAsync();
-
-            //return Ok(exercise); // 直接返回实体可能会导致循环引用问题，或者暴露不必要的数据
-
-            // 创建一个 DTO 来返回干净的数据结构，避免循环引用和过多的细节
-            var resultDto = new ExerciseDto
+            try
             {
-                Id = exercise.Id,
-                Name = exercise.Name,
-                Sets = exercise.Sets.Select(s => new SetRecordDto
-                {
-                    Id = s.Id,
-                    Weight = s.Weight,
-                    Reps = s.Reps
-                }).ToList()
-            };
-
-            return Ok(resultDto); // 现在返回的是干净的 DTO 对象
-
+                var created = await HttpContext.RequestServices
+                    .GetRequiredService<FitnessTrackerAPI.Services.ISetRecordService>()
+                    .AddSetToExerciseAsync(exerciseId, set, ct);
+                return CreatedAtAction(nameof(GetById), "Exercises", new { id = exerciseId }, created);
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
     }
 }

@@ -10,85 +10,73 @@ namespace FitnessTrackerAPI.Controllers
     [Route("api/[controller]")]
     public class WorkoutsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly FitnessTrackerAPI.Services.IWorkoutService _service;
 
-        public WorkoutsController(AppDbContext context)
+        public WorkoutsController(FitnessTrackerAPI.Services.IWorkoutService service)
         {
-            _context = context;
+            _service = service;
         }
 
         // GET: api/workouts
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<ActionResult<IEnumerable<WorkoutDto>>> GetAll(CancellationToken ct)
         {
-            var workouts = await _context.Workouts.ToListAsync();
+            var workouts = await _service.GetAllAsync(ct);
             return Ok(workouts);
         }
 
         // POST: api/workouts
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Workout workout)
+        public async Task<ActionResult<WorkoutDto>> Create([FromBody] CreateWorkoutDto dto, CancellationToken ct)
         {
-            _context.Workouts.Add(workout);
-            await _context.SaveChangesAsync();
-            return Ok(workout);
+            var created = await _service.CreateAsync(dto, ct);
+            return CreatedAtAction(nameof(GetById), new { id = created.Id }, created);
         }
 
+        // GET: api/workouts/{id}
         // Get by ID
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<ActionResult<WorkoutDto>> GetById(int id, CancellationToken ct)
         {
-            var workout = await _context.Workouts.FindAsync(id);
+            var workout = await _service.GetByIdAsync(id, ct);
             if (workout == null)
                 return NotFound();
             return Ok(workout);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, Workout updated)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateWorkoutDto dto, CancellationToken ct)
         {
-            var workout = await _context.Workouts.FindAsync(id);
-            if (workout == null)
-                return NotFound();
-            workout.Date = updated.Date;
-            workout.Notes = updated.Notes;
-            await _context.SaveChangesAsync();
-            return Ok(workout);
-
+            var ok = await _service.UpdateAsync(id, dto, ct);
+            if (!ok) return NotFound();
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(int id, CancellationToken ct)
         {
-            var workout = await _context.Workouts.FindAsync(id);
-            if (workout == null)
-                return NotFound();
-
-            _context.Workouts.Remove(workout);
-            await _context.SaveChangesAsync();
-            return Ok();
+            var ok = await _service.DeleteAsync(id, ct);
+            if (!ok) return NotFound();
+            return NoContent();
         }
 
         // POST: api/workouts/{workoutId}/exercises
         // Adds an exercise to a specific workout
         [HttpPost("{workoutId}/exercises")]
-        public async Task<IActionResult> AddExercise([FromRoute] int workoutId, [FromBody] CreateExerciseDto dto)
+        public async Task<IActionResult> AddExercise([FromRoute] int workoutId, [FromBody] CreateExerciseDto dto, CancellationToken ct)
         {
-            // 将 DTO 转换为实体再保存
-            var exercise = new Exercise { Name = dto.Name };
+            try
+            {
+                var created = await HttpContext.RequestServices
+                    .GetRequiredService<FitnessTrackerAPI.Services.IExerciseService>()
+                    .AddToWorkoutAsync(workoutId, dto, ct);
 
-            var workout = await _context.Workouts
-                .Include(w => w.Exercises)
-                .FirstOrDefaultAsync(w => w.Id == workoutId);
-
-            if (workout == null)
+                return CreatedAtAction(nameof(GetById), "Exercises", new { id = created.Id }, created);
+            }
+            catch (KeyNotFoundException)
+            {
                 return NotFound();
-
-            workout.Exercises.Add(exercise);
-
-            await _context.SaveChangesAsync();
-
-            return Ok(workout);
+            }
         }
     }
 }
