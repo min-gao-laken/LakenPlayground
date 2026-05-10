@@ -1,27 +1,26 @@
 ﻿using FitnessTrackerAPI.Data;
 using FitnessTrackerAPI.DTOs;
 using FitnessTrackerAPI.Models;
+using FitnessTrackerAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+
 namespace FitnessTrackerAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
     public class ExercisesController : ControllerBase
     {
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
-        private readonly FitnessTrackerAPI.Services.IExerciseService _service;
+        private readonly IExerciseService _service;
+        private readonly ISetRecordService _setRecordService;
 
-        public ExercisesController(FitnessTrackerAPI.Services.IExerciseService service)
+        public ExercisesController(IExerciseService service, ISetRecordService setRecordService)
         {
             _service = service;
+            _setRecordService = setRecordService;
         }
 
         // GET: api/exercises/{id}
-        // Get exercise by id
         [HttpGet("{id}")]
         public async Task<ActionResult<ExerciseDto>> GetById(int id, CancellationToken ct)
         {
@@ -30,17 +29,32 @@ namespace FitnessTrackerAPI.Controllers
             return Ok(dto);
         }
 
+        // PUT: api/exercises/{id}
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateExerciseDto dto, CancellationToken ct)
+        {
+            var ok = await _service.UpdateAsync(id, dto, ct);
+            if (!ok) return NotFound();
+            return NoContent();
+        }
+
+        // DELETE: api/exercises/{id}
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id, CancellationToken ct)
+        {
+            var ok = await _service.DeleteAsync(id, ct);
+            if (!ok) return NotFound();
+            return NoContent();
+        }
+
         // POST: api/exercises/{exerciseId}/sets
-        // Adds a new set to an exercise
         [HttpPost("{exerciseId}/sets")]
-        public async Task<IActionResult> AddSet([FromRoute] int exerciseId, [FromBody] SetRecord set, CancellationToken ct)
+        public async Task<IActionResult> AddSet([FromRoute] int exerciseId, [FromBody] CreateSetRecordDto dto, CancellationToken ct)
         {
             try
             {
-                var created = await HttpContext.RequestServices
-                    .GetRequiredService<FitnessTrackerAPI.Services.ISetRecordService>()
-                    .AddSetToExerciseAsync(exerciseId, set, ct);
-                return CreatedAtAction(nameof(GetById), "Exercises", new { id = exerciseId }, created);
+                var created = await _setRecordService.AddSetToExerciseAsync(exerciseId, dto, ct);
+                return CreatedAtAction("GetById", "SetRecords", new { id = created.Id }, created);
             }
             catch (KeyNotFoundException)
             {

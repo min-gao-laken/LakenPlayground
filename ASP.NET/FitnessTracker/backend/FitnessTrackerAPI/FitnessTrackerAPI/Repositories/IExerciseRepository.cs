@@ -8,5 +8,7 @@ namespace FitnessTrackerAPI.Repositories
     {
         Task<Exercise> AddAsync(Exercise exercise, CancellationToken ct = default);
         Task<Exercise?> GetByIdAsync(int id, CancellationToken ct = default);
+        Task UpdateAsync(Exercise exercise, CancellationToken ct = default);
+        Task DeleteAsync(Exercise exercise, CancellationToken ct = default);
     }
 }

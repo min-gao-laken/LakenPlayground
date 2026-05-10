@@ -27,11 +27,17 @@ namespace FitnessTrackerAPI.Services
 
         public async Task<WorkoutDto> CreateAsync(CreateWorkoutDto dto, CancellationToken ct = default)
         {
+            var exercises = dto.Exercises?.Select(e => new Exercise
+            {
+                Name = e.Name,
+                Sets = new List<SetRecord>()
+            }).ToList() ?? new List<Exercise>();
+
             var entity = new Workout
             {
                 Date = dto.Date,
                 Notes = dto.Notes,
-                Exercises = new List<Exercise>()
+                Exercises = exercises
             };
 
             var saved = await _repo.AddAsync(entity, ct);

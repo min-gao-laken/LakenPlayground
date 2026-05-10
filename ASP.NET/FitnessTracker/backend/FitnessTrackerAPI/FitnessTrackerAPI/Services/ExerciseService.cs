@@ -35,11 +35,28 @@ namespace FitnessTrackerAPI.Services
             var exercise = new Exercise { Name = dto.Name, WorkoutId = workoutId };
             var saved = await _exerciseRepo.AddAsync(exercise, ct);
 
-            // Optionally add to workout's navigation collection in-memory
             workout.Exercises ??= new List<Exercise>();
             workout.Exercises.Add(saved);
 
             return new ExerciseDto { Id = saved.Id, Name = saved.Name, Sets = new List<SetRecordDto>() };
+        }
+
+        public async Task<bool> UpdateAsync(int id, UpdateExerciseDto dto, CancellationToken ct = default)
+        {
+            var exercise = await _exerciseRepo.GetByIdAsync(id, ct);
+            if (exercise == null) return false;
+
+            exercise.Name = dto.Name;
+            await _exerciseRepo.UpdateAsync(exercise, ct);
+            return true;
+        }
+
+        public async Task<bool> DeleteAsync(int id, CancellationToken ct = default)
+        {
+            var exercise = await _exerciseRepo.GetByIdAsync(id, ct);
+            if (exercise == null) return false;
+            await _exerciseRepo.DeleteAsync(exercise, ct);
+            return true;
         }
     }
 }

@@ -26,5 +26,17 @@ namespace FitnessTrackerAPI.Repositories
                 .Include(e => e.Sets)
                 .FirstOrDefaultAsync(e => e.Id == id, ct);
         }
+
+        public async Task UpdateAsync(Exercise exercise, CancellationToken ct = default)
+        {
+            _context.Exercises.Update(exercise);
+            await _context.SaveChangesAsync(ct);
+        }
+
+        public async Task DeleteAsync(Exercise exercise, CancellationToken ct = default)
+        {
+            _context.Exercises.Remove(exercise);
+            await _context.SaveChangesAsync(ct);
+        }
     }
 }

@@ -3,6 +3,7 @@ using FitnessTrackerAPI.DTOs;
 using FitnessTrackerAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using FitnessTrackerAPI.Services;
 
 namespace FitnessTrackerAPI.Controllers
 {
@@ -10,11 +11,15 @@ namespace FitnessTrackerAPI.Controllers
     [Route("api/[controller]")]
     public class WorkoutsController : ControllerBase
     {
-        private readonly FitnessTrackerAPI.Services.IWorkoutService _service;
+        private readonly IWorkoutService _service;
+        private readonly IExerciseService _exerciseService;
+        private readonly ISetRecordService _setRecordService;
 
-        public WorkoutsController(FitnessTrackerAPI.Services.IWorkoutService service)
+        public WorkoutsController(IWorkoutService service, IExerciseService exerciseService, ISetRecordService setRecordService)
         {
             _service = service;
+            _exerciseService = exerciseService;
+            _setRecordService = setRecordService;
         }
 
         // GET: api/workouts
@@ -67,11 +72,8 @@ namespace FitnessTrackerAPI.Controllers
         {
             try
             {
-                var created = await HttpContext.RequestServices
-                    .GetRequiredService<FitnessTrackerAPI.Services.IExerciseService>()
-                    .AddToWorkoutAsync(workoutId, dto, ct);
-
-                return CreatedAtAction(nameof(GetById), "Exercises", new { id = created.Id }, created);
+                var created = await _exerciseService.AddToWorkoutAsync(workoutId, dto, ct);
+                return CreatedAtAction("GetById", "Exercises", new { id = created.Id }, created);
             }
             catch (KeyNotFoundException)
             {
