@@ -1,8 +1,5 @@
-﻿using FitnessTrackerAPI.Data;
-using FitnessTrackerAPI.DTOs;
-using FitnessTrackerAPI.Models;
+﻿using FitnessTrackerAPI.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using FitnessTrackerAPI.Services;
 
 namespace FitnessTrackerAPI.Controllers
@@ -13,13 +10,11 @@ namespace FitnessTrackerAPI.Controllers
     {
         private readonly IWorkoutService _service;
         private readonly IExerciseService _exerciseService;
-        private readonly ISetRecordService _setRecordService;
 
         public WorkoutsController(IWorkoutService service, IExerciseService exerciseService, ISetRecordService setRecordService)
         {
             _service = service;
             _exerciseService = exerciseService;
-            _setRecordService = setRecordService;
         }
 
         // GET: api/workouts

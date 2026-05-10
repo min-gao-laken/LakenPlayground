@@ -1,9 +1,6 @@
-﻿using FitnessTrackerAPI.Data;
-using FitnessTrackerAPI.DTOs;
-using FitnessTrackerAPI.Models;
+﻿using FitnessTrackerAPI.DTOs;
 using FitnessTrackerAPI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace FitnessTrackerAPI.Controllers
 {
