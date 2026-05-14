@@ -65,15 +65,8 @@ namespace FitnessTrackerAPI.Controllers
         [HttpPost("{workoutId}/exercises")]
         public async Task<IActionResult> AddExercise([FromRoute] int workoutId, [FromBody] CreateExerciseDto dto, CancellationToken ct)
         {
-            try
-            {
-                var created = await _exerciseService.AddToWorkoutAsync(workoutId, dto, ct);
-                return CreatedAtAction("GetById", "Exercises", new { id = created.Id }, created);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            var created = await _exerciseService.AddToWorkoutAsync(workoutId, dto, ct);
+            return CreatedAtAction(nameof(GetById), "Exercises", new { id = created.Id }, created);
         }
     }
 }

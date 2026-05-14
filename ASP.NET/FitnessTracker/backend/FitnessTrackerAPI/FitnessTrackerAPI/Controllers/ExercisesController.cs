@@ -48,15 +48,8 @@ namespace FitnessTrackerAPI.Controllers
         [HttpPost("{exerciseId}/sets")]
         public async Task<IActionResult> AddSet([FromRoute] int exerciseId, [FromBody] CreateSetRecordDto dto, CancellationToken ct)
         {
-            try
-            {
-                var created = await _setRecordService.AddSetToExerciseAsync(exerciseId, dto, ct);
-                return CreatedAtAction("GetById", "SetRecords", new { id = created.Id }, created);
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound();
-            }
+            var created = await _setRecordService.AddSetToExerciseAsync(exerciseId, dto, ct);
+            return CreatedAtAction("GetById", "SetRecords", new { id = created.Id }, created);
         }
     }
 }
