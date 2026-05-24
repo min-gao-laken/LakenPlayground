@@ -35,7 +35,7 @@ namespace FitnessTrackerAPI.Services
 
             var entity = new Workout
             {
-                Date = dto.Date,
+                Date = dto.Date ?? DateTime.Now,
                 Notes = dto.Notes,
                 Exercises = exercises
             };
@@ -48,7 +48,7 @@ namespace FitnessTrackerAPI.Services
         {
             var existing = await _repo.GetByIdAsync(id, ct);
             if (existing == null) return false;
-            existing.Date = dto.Date;
+            existing.Date = dto.Date ?? DateTime.Now;
             existing.Notes = dto.Notes;
             await _repo.UpdateAsync(existing, ct);
             return true;

@@ -6,11 +6,38 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    // Handle circular references in JSON serialization
-    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-});
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // Handle circular references in JSON serialization
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    })
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        // 启用自动模型验证
+        options.SuppressModelStateInvalidFilter = false;
+
+        // 自定义模型验证错误响应
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var errors = context.ModelState
+                .Where(e => e.Value?.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value?.Errors.Select(e => e.ErrorMessage).ToArray() ?? Array.Empty<string>()
+                );
+
+            return new Microsoft.AspNetCore.Mvc.BadRequestObjectResult(
+                new
+                {
+                    statusCode = 400,
+                    message = "Model validation failed",
+                    errors = errors,
+                    timestamp = DateTime.UtcNow
+                }
+            );
+        };
+    });
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
@@ -34,10 +61,11 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // ⭐ 中间件执行顺序很重要！
-// 1. 先注册异常处理中间件（捕获所有异常）
-app.UseMiddleware<ExceptionHandlingMiddleware>();
-// 2. 再注册请求日志中间件
+// 1. 先注册请求日志中间件（第一个处理请求）
 app.UseMiddleware<RequestLoggingMiddleware>();
+
+// 2. 再注册异常处理中间件（捕获所有异常）
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // ⭐ Swagger UI
 if (app.Environment.IsDevelopment())

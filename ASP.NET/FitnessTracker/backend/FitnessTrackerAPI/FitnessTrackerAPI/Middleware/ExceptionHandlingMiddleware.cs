@@ -18,7 +18,6 @@ namespace FitnessTrackerAPI.Middleware
         {
             try
             {
-                Console.WriteLine("in the ExceptionHandlingMiddleware...");
                 await _next(context);
             }
             catch (Exception ex)
@@ -40,7 +39,7 @@ namespace FitnessTrackerAPI.Middleware
                     context.Response.StatusCode = (int)HttpStatusCode.NotFound;
                     response = new ErrorResponse(
                         (int)HttpStatusCode.NotFound,
-                        "Resource Not Found",
+                        "Resource not found",
                         ex.Message
                     );
                     break;
@@ -49,7 +48,7 @@ namespace FitnessTrackerAPI.Middleware
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     response = new ErrorResponse(
                         (int)HttpStatusCode.BadRequest,
-                        "Invalid Request Parameter",
+                        "Invalid request parameter",
                         ex.Message
                     );
                     break;
@@ -58,7 +57,7 @@ namespace FitnessTrackerAPI.Middleware
                     context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
                     response = new ErrorResponse(
                         (int)HttpStatusCode.BadRequest,
-                        "Invalid Operation",
+                        "Invalid operation",
                         ex.Message
                     );
                     break;
@@ -67,7 +66,7 @@ namespace FitnessTrackerAPI.Middleware
                     context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     response = new ErrorResponse(
                         (int)HttpStatusCode.InternalServerError,
-                        "Internal Server Error",
+                        "Internal server error",
                         exception.Message
                     );
                     break;
