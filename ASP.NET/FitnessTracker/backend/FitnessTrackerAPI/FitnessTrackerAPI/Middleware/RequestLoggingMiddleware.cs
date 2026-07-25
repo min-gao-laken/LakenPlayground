@@ -9,14 +9,16 @@ namespace FitnessTrackerAPI.Middleware
         public RequestLoggingMiddleware(RequestDelegate next)
         {
             _next = next;
-            Console.WriteLine("[构造函数] RequestLoggingMiddleware 被创建");
+            Console.WriteLine("RequestLoggingMiddleware was created");
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
-            Console.WriteLine($"[InvokeAsync] RequestLoggingMiddleware 记录请求: {context.Request.Path}");
-            await _next(context);  // 继续传递给控制器或下一个中间件
-            Console.WriteLine("[InvokeAsync] RequestLoggingMiddleware 响应处理完成");
+            Console.WriteLine($"Method: {context.Request.Method}");
+            Console.WriteLine($"Path: {context.Request.Path}");
+
+            await _next(context); // Call the next middleware in the pipeline
+            Console.WriteLine("Request finished");
         }
     }
 }

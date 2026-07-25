@@ -8,27 +8,24 @@ namespace FitnessTrackerAPI.Middleware
     public class ModelValidationMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly ILogger<ModelValidationMiddleware> _logger;
 
         public ModelValidationMiddleware(RequestDelegate next, ILogger<ModelValidationMiddleware> logger)
         {
             _next = next;
-            _logger = logger;
         }
 
         public async Task InvokeAsync(HttpContext context)
         {
-            // 在执行管道之前，检查是否有验证错误
             await _next(context);
 
-            // 如果响应是 400 Bad Request 且是模型验证失败
+            // if the response status code is 400 and the response body contains model validation errors
             if (context.Response.StatusCode == (int)HttpStatusCode.BadRequest)
             {
-                // 检查是否已有响应体
+                // check if the response has already started
                 if (context.Response.HasStarted)
                     return;
 
-                // 重写为统一的验证错误格式
+                // set the response type to the custom error response format
                 context.Response.ContentType = "application/json";
                 var response = new ErrorResponse(
                     (int)HttpStatusCode.BadRequest,

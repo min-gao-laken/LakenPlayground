@@ -14,10 +14,10 @@ builder.Services.AddControllers()
     })
     .ConfigureApiBehaviorOptions(options =>
     {
-        // 启用自动模型验证
+        // Enable automatic model validation
         options.SuppressModelStateInvalidFilter = false;
 
-        // 自定义模型验证错误响应
+        // Customize the model validation error response
         options.InvalidModelStateResponseFactory = context =>
         {
             var errors = context.ModelState
@@ -54,20 +54,20 @@ builder.Services.AddScoped<FitnessTrackerAPI.Services.IExerciseService, FitnessT
 builder.Services.AddScoped<FitnessTrackerAPI.Repositories.ISetRecordRepository, FitnessTrackerAPI.Repositories.SetRecordRepository>();
 builder.Services.AddScoped<FitnessTrackerAPI.Services.ISetRecordService, FitnessTrackerAPI.Services.SetRecordService>();
 
-// ⭐ Swagger
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// ⭐ 中间件执行顺序很重要！
-// 1. 先注册请求日志中间件（第一个处理请求）
+// the order of middleware execution matters!
+// the request logging middleware should be registered first to log all incoming requests
 app.UseMiddleware<RequestLoggingMiddleware>();
-
-// 2. 再注册异常处理中间件（捕获所有异常）
+// the exception handling middleware should be registered next to catch any exceptions thrown by subsequent middleware
 app.UseMiddleware<ExceptionHandlingMiddleware>();
+app.UseMiddleware<ModelValidationMiddleware>();
 
-// ⭐ Swagger UI
+// Swagger UI
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
