@@ -77,7 +77,8 @@ namespace FitnessTrackerAPI.Services
                     {
                         Id = s.Id,
                         Weight = s.Weight,
-                        Reps = s.Reps
+                        Reps = s.Reps,
+                        ExerciseId = s.ExerciseId
                     }).ToList()
                 }).ToList()
             };

@@ -31,14 +31,14 @@ namespace FitnessTrackerAPI.Services
             exercise.Sets ??= new List<SetRecord>();
             exercise.Sets.Add(saved);
 
-            return new SetRecordDto { Id = saved.Id, Weight = saved.Weight, Reps = saved.Reps };
+            return MapToDto(saved);
         }
 
         public async Task<SetRecordDto?> GetByIdAsync(int id, CancellationToken ct = default)
         {
             var set = await _setRepo.GetByIdAsync(id, ct);
             if (set == null) return null;
-            return new SetRecordDto { Id = set.Id, Weight = set.Weight, Reps = set.Reps };
+            return MapToDto(set);
         }
 
         public async Task<bool> UpdateAsync(int id, UpdateSetRecordDto dto, CancellationToken ct = default)
@@ -58,6 +58,17 @@ namespace FitnessTrackerAPI.Services
             if (set == null) return false;
             await _setRepo.DeleteAsync(set, ct);
             return true;
+        }
+
+        private static SetRecordDto MapToDto(SetRecord set)
+        {
+            return new SetRecordDto
+            {
+                Id = set.Id,
+                Weight = set.Weight,
+                Reps = set.Reps,
+                ExerciseId = set.ExerciseId
+            };
         }
     }
 }

@@ -19,12 +19,7 @@ namespace FitnessTrackerAPI.Services
         {
             var e = await _exerciseRepo.GetByIdAsync(id, ct);
             if (e == null) return null;
-            return new ExerciseDto
-            {
-                Id = e.Id,
-                Name = e.Name,
-                Sets = e.Sets?.Select(s => new SetRecordDto { Id = s.Id, Reps = s.Reps, Weight = s.Weight }).ToList()
-            };
+            return MapToDto(e);
         }
 
         public async Task<ExerciseDto> AddToWorkoutAsync(int workoutId, CreateExerciseDto dto, CancellationToken ct = default)
@@ -38,7 +33,7 @@ namespace FitnessTrackerAPI.Services
             workout.Exercises ??= new List<Exercise>();
             workout.Exercises.Add(saved);
 
-            return new ExerciseDto { Id = saved.Id, Name = saved.Name, Sets = new List<SetRecordDto>() };
+            return MapToDto(saved);
         }
 
         public async Task<bool> UpdateAsync(int id, UpdateExerciseDto dto, CancellationToken ct = default)
@@ -57,6 +52,22 @@ namespace FitnessTrackerAPI.Services
             if (exercise == null) return false;
             await _exerciseRepo.DeleteAsync(exercise, ct);
             return true;
+        }
+
+        private static ExerciseDto MapToDto(Exercise e)
+        {
+            return new ExerciseDto
+            {
+                Id = e.Id,
+                Name = e.Name,
+                Sets = e.Sets?.Select(s => new SetRecordDto
+                {
+                    Id = s.Id,
+                    Weight = s.Weight,
+                    Reps = s.Reps,
+                    ExerciseId = s.ExerciseId
+                }).ToList()
+            };
         }
     }
 }
