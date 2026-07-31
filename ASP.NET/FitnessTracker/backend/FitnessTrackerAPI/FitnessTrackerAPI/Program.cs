@@ -68,22 +68,64 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 app.UseMiddleware<ModelValidationMiddleware>();
 
 // Swagger UI
-if (app.Environment.IsDevelopment())
+app.UseSwagger(c => c.RouteTemplate = "swagger/{documentName}/swagger.json");
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "FitnessTracker API V1");
+    c.RoutePrefix = "swagger";
+});
+app.MapOpenApi();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
+app.MapGet("/hello", () => Results.Text("hello from container"));
+
+if (!app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseHttpsRedirection();
 }
-
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    try
+    {
+        var canConnect = await dbContext.Database.CanConnectAsync();
+        if (!canConnect)
+        {
+            await dbContext.Database.EnsureCreatedAsync();
+        }
+    }
+    catch
+    {
+        await dbContext.Database.EnsureCreatedAsync();
+    }
+
+    await dbContext.Database.MigrateAsync();
+
+    if (!await dbContext.Workouts.AnyAsync())
+    {
+        var workout = new FitnessTrackerAPI.Models.Workout
+        {
+            Date = DateTime.UtcNow,
+            Notes = "Seeded workout"
+        };
+
+        dbContext.Workouts.Add(workout);
+        await dbContext.SaveChangesAsync();
+
+        dbContext.Exercises.Add(new FitnessTrackerAPI.Models.Exercise
+        {
+            Name = "Seeded Exercise",
+            WorkoutId = workout.Id
+        });
+
+        await dbContext.SaveChangesAsync();
+    }
+}
 
 app.Run();

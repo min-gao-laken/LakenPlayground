@@ -1,0 +1,47 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: fitnesstracker-db
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "ChangeMe!123"
+      MSSQL_PID: Developer
+    ports:
+      - "11433:1433"
+    volumes:
+      - sqldata:/var/opt/mssql
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'ChangeMe!123' -C -Q 'SELECT 1' -b",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 60s
+
+  backend:
+    build:
+      context: ./backend/FitnessTrackerAPI
+      dockerfile: Dockerfile
+    ports:
+      - "5095:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Server=db,1433;Database=FitnessDb;User Id=sa;Password=ChangeMe!123;TrustServerCertificate=True;
+
+  frontend:
+    build:
+      context: ./frontend/fitness-tracker-ui
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_TARGET: http://backend:8080
+    depends_on:
+      - backend
+
+volumes:
+  sqldata:
