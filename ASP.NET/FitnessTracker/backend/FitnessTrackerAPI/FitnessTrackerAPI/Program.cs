@@ -1,7 +1,13 @@
 using FitnessTrackerAPI.Data;
 using FitnessTrackerAPI.Middleware;
+using FitnessTrackerAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json.Serialization;
+using System.Data.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,6 +59,29 @@ builder.Services.AddScoped<FitnessTrackerAPI.Repositories.IExerciseRepository, F
 builder.Services.AddScoped<FitnessTrackerAPI.Services.IExerciseService, FitnessTrackerAPI.Services.ExerciseService>();
 builder.Services.AddScoped<FitnessTrackerAPI.Repositories.ISetRecordRepository, FitnessTrackerAPI.Repositories.SetRecordRepository>();
 builder.Services.AddScoped<FitnessTrackerAPI.Services.ISetRecordService, FitnessTrackerAPI.Services.SetRecordService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+var jwtKey = builder.Configuration["Jwt:Key"] ?? "dev-secret-key-please-change";
+var issuer = builder.Configuration["Jwt:Issuer"] ?? "FitnessTrackerAPI";
+var audience = builder.Configuration["Jwt:Audience"] ?? "FitnessTrackerAPI";
+var signingKeyBytes = SHA256.HashData(Encoding.UTF8.GetBytes(jwtKey));
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = issuer,
+            ValidAudience = audience,
+            IssuerSigningKey = new SymmetricSecurityKey(signingKeyBytes)
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
@@ -84,6 +113,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
@@ -91,40 +121,61 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var connection = dbContext.Database.GetDbConnection();
+    var connectionString = connection.ConnectionString;
+
+    Console.WriteLine($"Initializing database with connection: {connectionString}");
 
     try
     {
-        var canConnect = await dbContext.Database.CanConnectAsync();
-        if (!canConnect)
+        if (!await dbContext.Database.CanConnectAsync())
         {
+            Console.WriteLine("Database is not reachable; attempting to create it.");
             await dbContext.Database.EnsureCreatedAsync();
         }
+
+        await dbContext.Database.MigrateAsync();
+        Console.WriteLine("Database migration completed successfully.");
     }
-    catch
+    catch (Exception ex)
     {
-        await dbContext.Database.EnsureCreatedAsync();
+        Console.WriteLine($"Database initialization warning: {ex.Message}");
+        try
+        {
+            await dbContext.Database.EnsureCreatedAsync();
+            Console.WriteLine("Database EnsureCreated completed.");
+        }
+        catch (Exception ensureEx)
+        {
+            Console.WriteLine($"Database EnsureCreated failed: {ensureEx.Message}");
+        }
     }
 
-    await dbContext.Database.MigrateAsync();
-
-    if (!await dbContext.Workouts.AnyAsync())
+    try
     {
-        var workout = new FitnessTrackerAPI.Models.Workout
+        if (!await dbContext.Workouts.AnyAsync())
         {
-            Date = DateTime.UtcNow,
-            Notes = "Seeded workout"
-        };
+            var workout = new FitnessTrackerAPI.Models.Workout
+            {
+                Date = DateTime.UtcNow,
+                Notes = "Seeded workout"
+            };
 
-        dbContext.Workouts.Add(workout);
-        await dbContext.SaveChangesAsync();
+            dbContext.Workouts.Add(workout);
+            await dbContext.SaveChangesAsync();
 
-        dbContext.Exercises.Add(new FitnessTrackerAPI.Models.Exercise
-        {
-            Name = "Seeded Exercise",
-            WorkoutId = workout.Id
-        });
+            dbContext.Exercises.Add(new FitnessTrackerAPI.Models.Exercise
+            {
+                Name = "Seeded Exercise",
+                WorkoutId = workout.Id
+            });
 
-        await dbContext.SaveChangesAsync();
+            await dbContext.SaveChangesAsync();
+        }
+    }
+    catch (Exception seedEx)
+    {
+        Console.WriteLine($"Seeding warning: {seedEx.Message}");
     }
 }
 
