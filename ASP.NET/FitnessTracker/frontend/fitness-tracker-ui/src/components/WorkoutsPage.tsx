@@ -4,6 +4,8 @@ import { CreateWorkoutForm } from './CreateWorkoutForm'
 import { WorkoutDetailPanel } from './WorkoutDetailPanel'
 import { WorkoutListCards } from './WorkoutListCards'
 
+type WorkoutExercise = NonNullable<Workout['exercises']>[number]
+
 type WorkoutsPageProps = {
   workouts: Workout[]
   workoutsLoading: boolean
@@ -30,9 +32,9 @@ type WorkoutsPageProps = {
   onUpdateWorkout: (event: React.FormEvent<HTMLFormElement>) => Promise<void>
   onDeleteWorkout: () => Promise<void>
   onExerciseNameEdit: (exerciseId: number, value: string) => void
-  onUpdateExercise: (exercise: Workout['exercises'][number]) => Promise<void>
-  onDeleteExercise: (exercise: Workout['exercises'][number]) => Promise<void>
-  onCreateSet: (exercise: Workout['exercises'][number]) => Promise<void>
+  onUpdateExercise: (exercise: WorkoutExercise) => Promise<void>
+  onDeleteExercise: (exercise: WorkoutExercise) => Promise<void>
+  onCreateSet: (exercise: WorkoutExercise) => Promise<void>
   onSetDraftChange: (exerciseId: number, field: string, value: string) => void
   onStartEditSet: (setId: number, weight?: number, reps?: number) => void
   onSaveSet: () => Promise<void>
