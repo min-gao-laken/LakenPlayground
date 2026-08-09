@@ -1,7 +1,5 @@
 using System.Net;
-using System.Text.Json;
 using FitnessTrackerAPI.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace FitnessTrackerAPI.Middleware
 {
@@ -9,7 +7,7 @@ namespace FitnessTrackerAPI.Middleware
     {
         private readonly RequestDelegate _next;
 
-        public ModelValidationMiddleware(RequestDelegate next, ILogger<ModelValidationMiddleware> logger)
+        public ModelValidationMiddleware(RequestDelegate next)
         {
             _next = next;
         }
@@ -18,14 +16,13 @@ namespace FitnessTrackerAPI.Middleware
         {
             await _next(context);
 
-            // if the response status code is 400 and the response body contains model validation errors
-            if (context.Response.StatusCode == (int)HttpStatusCode.BadRequest)
+            if (context.Response.StatusCode != (int)HttpStatusCode.BadRequest || context.Response.HasStarted)
             {
-                // check if the response has already started
-                if (context.Response.HasStarted)
-                    return;
+                return;
+            }
 
-                // set the response type to the custom error response format
+            if (context.Request.Path.StartsWithSegments("/api"))
+            {
                 context.Response.ContentType = "application/json";
                 var response = new ErrorResponse(
                     (int)HttpStatusCode.BadRequest,

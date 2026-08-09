@@ -16,6 +16,8 @@ namespace FitnessTrackerAPI.Repositories
         public Task<List<Workout>> GetAllAsync(CancellationToken ct = default)
         {
             return _context.Workouts
+                .Include(w => w.Exercises)
+                .ThenInclude(e => e.Sets)
                 .AsNoTracking()
                 .ToListAsync(ct);
         }

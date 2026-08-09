@@ -1,4 +1,5 @@
 import { OpenAPI, WorkoutsService } from './api/generated'
+import { ApiError } from './api/generated/core/ApiError'
 import type { CreateWorkoutDto, ExerciseDto, WorkoutDto } from './api/generated'
 import type { TrainingStats, WorkoutHistoryItem } from './types/training'
 
@@ -13,6 +14,47 @@ export type AuthResponse = {
 export type MeResponse = {
   username: string
   userId: string
+}
+
+type UnauthorizedHandler = () => void
+
+let unauthorizedHandler: UnauthorizedHandler | null = null
+
+export function setUnauthorizedHandler(handler: UnauthorizedHandler | null): void {
+  unauthorizedHandler = handler
+}
+
+function notifyUnauthorized(): void {
+  unauthorizedHandler?.()
+}
+
+function isUnauthorizedError(error: unknown): boolean {
+  return error instanceof ApiError && error.status === 401
+}
+
+function getErrorMessage(payload: unknown, fallback: string): string {
+  if (payload && typeof payload === 'object' && 'message' in payload) {
+    const message = (payload as { message?: unknown }).message
+    if (typeof message === 'string' && message.trim()) {
+      return message
+    }
+  }
+
+  return fallback
+}
+
+async function parseResponse<T>(response: Response, fallback: string): Promise<T> {
+  const payload = await response.json().catch(() => null)
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      notifyUnauthorized()
+    }
+
+    throw new Error(getErrorMessage(payload, fallback))
+  }
+
+  return payload as T
 }
 
 export function getStoredAuthToken(): string | null {
@@ -44,12 +86,7 @@ export async function loginUser(username: string, password: string): Promise<Aut
     body: JSON.stringify({ username, password }),
   })
 
-  const payload = await response.json().catch(() => null)
-  if (!response.ok) {
-    throw new Error(payload?.message || 'Login failed')
-  }
-
-  return payload as AuthResponse
+  return await parseResponse<AuthResponse>(response, 'Login failed')
 }
 
 export async function registerUser(username: string, password: string): Promise<AuthResponse> {
@@ -59,12 +96,7 @@ export async function registerUser(username: string, password: string): Promise<
     body: JSON.stringify({ username, password }),
   })
 
-  const payload = await response.json().catch(() => null)
-  if (!response.ok) {
-    throw new Error(payload?.message || 'Registration failed')
-  }
-
-  return payload as AuthResponse
+  return await parseResponse<AuthResponse>(response, 'Registration failed')
 }
 
 export async function fetchMe(token?: string): Promise<MeResponse> {
@@ -75,12 +107,7 @@ export async function fetchMe(token?: string): Promise<MeResponse> {
     },
   })
 
-  const payload = await response.json().catch(() => null)
-  if (!response.ok) {
-    throw new Error(payload?.message || 'Failed to fetch user information')
-  }
-
-  return payload as MeResponse
+  return await parseResponse<MeResponse>(response, 'Failed to fetch user information')
 }
 
 export async function fetchWorkouts(): Promise<Workout[]> {
@@ -103,12 +130,7 @@ export async function fetchTrainingStats(): Promise<TrainingStats> {
     },
   })
 
-  const payload = await response.json().catch(() => null)
-  if (!response.ok) {
-    throw new Error(payload?.message || 'Failed to fetch training stats')
-  }
-
-  return payload as TrainingStats
+  return await parseResponse<TrainingStats>(response, 'Failed to fetch training stats')
 }
 
 export async function fetchWorkoutHistory(): Promise<WorkoutHistoryItem[]> {
@@ -119,10 +141,11 @@ export async function fetchWorkoutHistory(): Promise<WorkoutHistoryItem[]> {
     },
   })
 
-  const payload = await response.json().catch(() => null)
-  if (!response.ok) {
-    throw new Error(payload?.message || 'Failed to fetch workout history')
-  }
+  return await parseResponse<WorkoutHistoryItem[]>(response, 'Failed to fetch workout history')
+}
 
-  return payload as WorkoutHistoryItem[]
+export function handleApiError(error: unknown): void {
+  if (isUnauthorizedError(error)) {
+    notifyUnauthorized()
+  }
 }

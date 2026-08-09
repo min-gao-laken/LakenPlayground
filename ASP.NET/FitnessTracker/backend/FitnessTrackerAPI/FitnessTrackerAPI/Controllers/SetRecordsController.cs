@@ -1,4 +1,5 @@
 using FitnessTrackerAPI.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using FitnessTrackerAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -6,6 +7,7 @@ namespace FitnessTrackerAPI.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class SetRecordsController : ControllerBase
     {
         private readonly ISetRecordService _service;

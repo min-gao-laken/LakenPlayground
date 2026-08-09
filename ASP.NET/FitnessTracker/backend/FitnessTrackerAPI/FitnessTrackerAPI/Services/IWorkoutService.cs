@@ -12,5 +12,7 @@ namespace FitnessTrackerAPI.Services
         Task<WorkoutDto> CreateAsync(CreateWorkoutDto dto, CancellationToken ct = default);
         Task<bool> UpdateAsync(int id, UpdateWorkoutDto dto, CancellationToken ct = default);
         Task<bool> DeleteAsync(int id, CancellationToken ct = default);
+        Task<TrainingStatsDto> GetTrainingStatsAsync(CancellationToken ct = default);
+        Task<List<WorkoutHistoryItemDto>> GetHistoryAsync(CancellationToken ct = default);
     }
 }

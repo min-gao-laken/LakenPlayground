@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FitnessTrackerAPI.Controllers
 {
+    /// <summary>
+    /// Authentication and user management endpoints
+    /// </summary>
     [ApiController]
     [Route("api/auth")]
     public class AuthController : ControllerBase
@@ -18,11 +21,20 @@ namespace FitnessTrackerAPI.Controllers
             _authService = authService;
         }
 
+        /// <summary>
+        /// Register a new user account
+        /// </summary>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns>Authentication response with JWT token</returns>
+        /// <response code="200">User registered successfully</response>
+        /// <response code="400">Username already exists or invalid credentials</response>
         [HttpPost("register")]
+        [AllowAnonymous]
         [Consumes("application/json")]
-        public async Task<ActionResult<AuthResponseDto>> Register(CancellationToken ct)
+        [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<AuthResponseDto>> Register([FromBody] RegisterRequestDto request, CancellationToken ct)
         {
-            var request = await ReadJsonBodyAsync<RegisterRequestDto>();
             if (request == null)
             {
                 return BadRequest(new { message = "Invalid JSON body" });
@@ -37,11 +49,22 @@ namespace FitnessTrackerAPI.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Login with existing credentials
+        /// </summary>
+        /// <param name="ct">Cancellation token</param>
+        /// <returns>Authentication response with JWT token</returns>
+        /// <response code="200">Login successful</response>
+        /// <response code="401">Invalid username or password</response>
+        /// <response code="400">Invalid request body</response>
         [HttpPost("login")]
+        [AllowAnonymous]
         [Consumes("application/json")]
-        public async Task<ActionResult<AuthResponseDto>> Login(CancellationToken ct)
+        [ProducesResponseType(typeof(AuthResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<AuthResponseDto>> Login([FromBody] LoginRequestDto request, CancellationToken ct)
         {
-            var request = await ReadJsonBodyAsync<LoginRequestDto>();
             if (request == null)
             {
                 return BadRequest(new { message = "Invalid JSON body" });
@@ -56,8 +79,16 @@ namespace FitnessTrackerAPI.Controllers
             return Ok(result);
         }
 
+        /// <summary>
+        /// Get current authenticated user information
+        /// </summary>
+        /// <returns>Current user details</returns>
+        /// <response code="200">User information retrieved successfully</response>
+        /// <response code="401">User not authenticated</response>
         [Authorize]
         [HttpGet("me")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public ActionResult<object> Me()
         {
             return Ok(new
@@ -65,29 +96,6 @@ namespace FitnessTrackerAPI.Controllers
                 username = User.Identity?.Name,
                 userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value
             });
-        }
-
-        private async Task<T?> ReadJsonBodyAsync<T>()
-        {
-            try
-            {
-                Request.EnableBuffering();
-                using var reader = new StreamReader(Request.Body, Encoding.UTF8, leaveOpen: true);
-                var body = await reader.ReadToEndAsync();
-                Request.Body.Position = 0;
-
-                Console.WriteLine($"Raw auth body: {body}");
-
-                return JsonSerializer.Deserialize<T>(body, new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Auth JSON parse error: {ex}");
-                return default;
-            }
         }
 
     }

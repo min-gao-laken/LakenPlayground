@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import './App.scss'
-import { fetchMe, fetchTrainingStats, fetchWorkoutHistory, initializeAuthFromStorage, setStoredAuthToken } from './api'
+import { fetchMe, fetchTrainingStats, fetchWorkoutHistory, initializeAuthFromStorage, setStoredAuthToken, setUnauthorizedHandler } from './api'
 import AuthPage from './AuthPage'
 import { WorkoutsPage } from './components/WorkoutsPage'
 import { useWorkoutPage } from './hooks/useWorkoutPage'
@@ -50,6 +50,21 @@ function App() {
     handleDeleteSet,
     loadData: loadWorkouts,
   } = useWorkoutPage()
+
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      setStoredAuthToken(null)
+      setToken(null)
+      setUsername(null)
+      setStats(null)
+      setHistory([])
+      setMenuOpen(false)
+      setCurrentPage('home')
+      setLoading(false)
+    })
+
+    return () => setUnauthorizedHandler(null)
+  }, [])
 
   useEffect(() => {
     if (!token) {

@@ -2,8 +2,11 @@ using FitnessTrackerAPI.Data;
 using FitnessTrackerAPI.Middleware;
 using FitnessTrackerAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -69,6 +72,22 @@ var signingKeyBytes = SHA256.HashData(Encoding.UTF8.GetBytes(jwtKey));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var authorizationHeader = context.Request.Headers.Authorization.ToString();
+                if (!string.IsNullOrWhiteSpace(authorizationHeader))
+                {
+                    context.Token = authorizationHeader.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)
+                        ? authorizationHeader[7..].Trim()
+                        : authorizationHeader.Trim();
+                }
+
+                return Task.CompletedTask;
+            }
+        };
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -85,7 +104,25 @@ builder.Services.AddAuthorization();
 
 // Swagger
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Fitness Tracker API",
+        Version = "v1",
+        Description = "API for managing workouts, exercises, and training progress"
+    });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Paste either the raw JWT token or 'Bearer <token>'. Swagger UI will send it in the Authorization header.",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey
+    });
+
+    c.OperationFilter<AuthorizeOperationFilter>();
+});
 
 var app = builder.Build();
 
@@ -180,3 +217,26 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
+
+sealed class AuthorizeOperationFilter : IOperationFilter
+{
+    public void Apply(OpenApiOperation operation, OperationFilterContext context)
+    {
+        var hasAuthorize = context.MethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any()
+            || context.MethodInfo.DeclaringType?.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any() == true;
+
+        var hasAllowAnonymous = context.MethodInfo.GetCustomAttributes(true).OfType<AllowAnonymousAttribute>().Any()
+            || context.MethodInfo.DeclaringType?.GetCustomAttributes(true).OfType<AllowAnonymousAttribute>().Any() == true;
+
+        if (!hasAuthorize || hasAllowAnonymous)
+        {
+            return;
+        }
+
+        operation.Security ??= new List<OpenApiSecurityRequirement>();
+        operation.Security.Add(new OpenApiSecurityRequirement
+        {
+            [new OpenApiSecuritySchemeReference("Bearer", context.Document, null)] = new List<string>()
+        });
+    }
+}

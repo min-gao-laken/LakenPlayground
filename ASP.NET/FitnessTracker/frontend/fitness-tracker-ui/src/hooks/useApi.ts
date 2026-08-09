@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react'
+import { ApiError } from '../api/generated/core/ApiError'
 import { ExercisesService, SetRecordsService, WorkoutsService } from '../api/generated'
 import type { CreateSetRecordDto, CreateWorkoutDto, ExerciseDto, UpdateExerciseDto, UpdateSetRecordDto, UpdateWorkoutDto, WorkoutDto } from '../api/generated'
+import { handleApiError } from '../api'
 
 export function useApi() {
   const [loading, setLoading] = useState(false)
@@ -13,7 +15,12 @@ export function useApi() {
     try {
       return await action()
     } catch (err) {
+      handleApiError(err)
+      if (err instanceof ApiError && err.status === 401) {
+        setError('Your session expired. Please sign in again.')
+      } else {
       setError((err as Error).message)
+      }
       throw err
     } finally {
       setLoading(false)

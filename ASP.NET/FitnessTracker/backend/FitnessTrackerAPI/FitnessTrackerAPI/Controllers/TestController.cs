@@ -1,10 +1,12 @@
 ﻿using FitnessTrackerAPI.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FitnessTrackerAPI.Controllers
 {
     [ApiController]
     [Route("api/test")]
+    [AllowAnonymous]
     public class TestController : ControllerBase
     {
         private readonly AppDbContext _context;
