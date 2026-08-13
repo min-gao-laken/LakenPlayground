@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import './App.scss'
-import { fetchMe, fetchTrainingStats, fetchWorkoutHistory, initializeAuthFromStorage, setStoredAuthToken, setUnauthorizedHandler } from './api'
+import { fetchMe, fetchTrainingStats, fetchWorkoutHistory, initializeAuthFromStorage, recommendTrainingPlan, setStoredAuthToken, setUnauthorizedHandler } from './api'
 import AuthPage from './AuthPage'
+import { AICoachCard } from './components/AICoachCard'
 import { WorkoutsPage } from './components/WorkoutsPage'
 import { useWorkoutPage } from './hooks/useWorkoutPage'
 
@@ -13,6 +14,12 @@ function App() {
   const [currentPage, setCurrentPage] = useState<'home' | 'workouts'>('home')
   const [stats, setStats] = useState<{ totalWorkouts: number; totalExercises: number; totalSets: number; weeklyWorkouts: number; monthlyWorkouts: number; lastWorkoutLabel: string | null } | null>(null)
   const [history, setHistory] = useState<Array<{ id: number; date: string; notes: string | null; exerciseCount: number; setCount: number; summary: string }>>([])
+  const [aiGoal, setAiGoal] = useState('general fitness')
+  const [aiWeeklyDays, setAiWeeklyDays] = useState(3)
+  const [aiExperienceLevel, setAiExperienceLevel] = useState('beginner')
+  const [aiPlan, setAiPlan] = useState<Awaited<ReturnType<typeof recommendTrainingPlan>> | null>(null)
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState<string | null>(null)
   const menuRef = useRef<HTMLDivElement | null>(null)
   const {
     loading: workoutsLoading,
@@ -107,6 +114,32 @@ function App() {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [menuOpen])
+
+  const handleGeneratePlan = useCallback(async () => {
+    if (!token) return
+
+    setAiLoading(true)
+    setAiError(null)
+
+    try {
+      const nextPlan = await recommendTrainingPlan({
+        goal: aiGoal,
+        weeklyDays: aiWeeklyDays,
+        experienceLevel: aiExperienceLevel,
+      })
+      setAiPlan(nextPlan)
+    } catch (error) {
+      setAiError(error instanceof Error ? error.message : 'Failed to generate training plan.')
+    } finally {
+      setAiLoading(false)
+    }
+  }, [aiExperienceLevel, aiGoal, aiWeeklyDays, token])
+
+  useEffect(() => {
+    if (token) {
+      void handleGeneratePlan()
+    }
+  }, [handleGeneratePlan, token])
 
   const handleLogout = () => {
     setStoredAuthToken(null)
@@ -228,6 +261,19 @@ function App() {
                   </div>
                 </div>
               </div>
+
+              <AICoachCard
+                goal={aiGoal}
+                weeklyDays={aiWeeklyDays}
+                experienceLevel={aiExperienceLevel}
+                loading={aiLoading}
+                plan={aiPlan}
+                error={aiError}
+                onGoalChange={setAiGoal}
+                onWeeklyDaysChange={setAiWeeklyDays}
+                onExperienceLevelChange={setAiExperienceLevel}
+                onGenerate={handleGeneratePlan}
+              />
 
               <div className="management-grid history-grid">
                 <div className="management-card">

@@ -144,6 +144,39 @@ export async function fetchWorkoutHistory(): Promise<WorkoutHistoryItem[]> {
   return await parseResponse<WorkoutHistoryItem[]>(response, 'Failed to fetch workout history')
 }
 
+export type TrainingPlanRecommendationRequest = {
+  goal: string
+  weeklyDays: number
+  experienceLevel: string
+}
+
+export type TrainingPlanRecommendation = {
+  goal: string
+  weeklyDays: number
+  experienceLevel: string
+  summary: string
+  source: 'gemini' | 'fallback'
+  days: Array<{
+    dayName: string
+    focus: string
+    notes: string
+    exercises: string[]
+  }>
+}
+
+export async function recommendTrainingPlan(request: TrainingPlanRecommendationRequest): Promise<TrainingPlanRecommendation> {
+  const response = await fetch('/api/ai/recommend-plan', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${getStoredAuthToken() ?? ''}`,
+    },
+    body: JSON.stringify(request),
+  })
+
+  return await parseResponse<TrainingPlanRecommendation>(response, 'Failed to generate training plan')
+}
+
 export function handleApiError(error: unknown): void {
   if (isUnauthorizedError(error)) {
     notifyUnauthorized()
