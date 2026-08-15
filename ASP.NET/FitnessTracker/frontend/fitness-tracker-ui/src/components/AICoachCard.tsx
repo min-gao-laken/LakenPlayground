@@ -66,42 +66,61 @@ export function AICoachCard({
           </select>
         </label>
 
-        <button type="button" className="btn-primary" onClick={() => void onGenerate()} disabled={loading}>
+        <button
+          type="button"
+          className="ai-coach-generate-button"
+          onClick={() => void onGenerate()}
+          disabled={loading}
+        >
           {loading ? 'Generating...' : 'Generate plan'}
         </button>
       </div>
 
       {error && <div className="ai-coach-error">{error}</div>}
 
-      {plan && (
-        <div className="ai-plan-result">
+      {loading ? (
+        <div className="ai-plan-result ai-plan-result--loading" aria-live="polite">
           <div className="ai-plan-summary">
-            <strong>{plan.goal}</strong>
-            <span>{plan.weeklyDays}-day plan · {plan.experienceLevel}</span>
-            <span className={`ai-plan-source ai-plan-source--${plan.source === 'gemini' ? 'gemini' : 'fallback'}`}>
-              {plan.source === 'gemini' ? 'Gemini' : 'Local template'}
-            </span>
+            <strong>Generating plan...</strong>
+            <span>Loading personalized recommendation</span>
           </div>
-
-          <p>{plan.summary}</p>
-
-          <div className="ai-plan-days">
-            {plan.days.map((day) => (
-              <div key={day.dayName} className="ai-plan-day">
-                <div className="ai-plan-day__head">
-                  <strong>{day.dayName}</strong>
-                  <span>{day.focus}</span>
-                </div>
-                <p>{day.notes}</p>
-                <ul>
-                  {day.exercises.map((exercise) => (
-                    <li key={`${day.dayName}-${exercise}`}>{exercise}</li>
-                  ))}
-                </ul>
-              </div>
-            ))}
+          <div className="ai-plan-loading" style={{ display: 'grid', gap: '0.75rem', marginTop: '1rem' }}>
+            <div style={{ height: '12px', width: '65%', background: '#e5e7eb', borderRadius: '999px' }} />
+            <div style={{ height: '12px', width: '100%', background: '#f3f4f6', borderRadius: '999px' }} />
+            <div style={{ height: '12px', width: '80%', background: '#f3f4f6', borderRadius: '999px' }} />
           </div>
         </div>
+      ) : (
+        plan && (
+          <div className="ai-plan-result">
+            <div className="ai-plan-summary">
+              <strong>{plan.goal}</strong>
+              <span>{plan.weeklyDays}-day plan · {plan.experienceLevel}</span>
+              <span className={`ai-plan-source ai-plan-source--${plan.source === 'gemini' ? 'gemini' : 'fallback'}`}>
+                {plan.source === 'gemini' ? 'Gemini' : 'Local template'}
+              </span>
+            </div>
+
+            <p>{plan.summary}</p>
+
+            <div className="ai-plan-days">
+              {plan.days.map((day) => (
+                <div key={day.dayName} className="ai-plan-day">
+                  <div className="ai-plan-day__head">
+                    <strong>{day.dayName}</strong>
+                    <span>{day.focus}</span>
+                  </div>
+                  <p>{day.notes}</p>
+                  <ul>
+                    {day.exercises.map((exercise) => (
+                      <li key={`${day.dayName}-${exercise}`}>{exercise}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
       )}
     </div>
   )

@@ -120,6 +120,7 @@ function App() {
 
     setAiLoading(true)
     setAiError(null)
+    setAiPlan(null)
 
     try {
       const nextPlan = await recommendTrainingPlan({
@@ -134,12 +135,6 @@ function App() {
       setAiLoading(false)
     }
   }, [aiExperienceLevel, aiGoal, aiWeeklyDays, token])
-
-  useEffect(() => {
-    if (token) {
-      void handleGeneratePlan()
-    }
-  }, [handleGeneratePlan, token])
 
   const handleLogout = () => {
     setStoredAuthToken(null)
@@ -234,13 +229,13 @@ function App() {
                   <div>
                     <p className="repo-hero-card__eyebrow">Repository</p>
                     <h2>Fitness Tracker Workspace</h2>
-                    <p>Overview / Activity</p>
+                    {/* <p>Overview / Activity</p> */}
                   </div>
-                  <div className="repo-hero-card__tabs">
+                  {/* <div className="repo-hero-card__tabs">
                     <span className="repo-pill repo-pill--active">Overview</span>
                     <span className="repo-pill">Activity</span>
                     <span className="repo-pill">Settings</span>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="repo-metrics-grid">
