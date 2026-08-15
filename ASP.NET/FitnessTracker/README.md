@@ -27,19 +27,7 @@ A full-stack fitness tracking system built with ASP.NET Core + React + TypeScrip
 
 ## Architecture
 
-### 1) System Context
-
-```mermaid
-flowchart LR
-	U[User] --> FE[Fitness Tracker Web App]
-	FE --> BE[FitnessTracker API]
-	BE --> DB[(SQL Server)]
-	BE --> AI[External AI Service]
-```
-
-This view defines system boundaries: users interact with the React app, the app calls the ASP.NET Core API, and the API persists data in SQL Server while optionally calling an external AI service.
-
-### 2) Container Architecture
+### 1) Container Architecture
 
 ```mermaid
 flowchart TB
@@ -81,7 +69,7 @@ flowchart TB
 
 This view shows deployment-level responsibilities and communication paths between frontend, backend, data, and external services.
 
-### 3) Backend Component Flow
+### 2) Backend Component Flow
 
 ```mermaid
 flowchart LR
@@ -153,6 +141,10 @@ Request lifecycle:
 
 Controller → Service → Repository
 
+### Middleware
+
+Centralized request logging, model validation, and exception handling through custom ASP.NET Core middleware.
+
 ### Type-safe API Integration
 
 Used OpenAPI code generation to generate typed API clients
@@ -176,6 +168,64 @@ development environment.
 <img src="./docs/images/docker.png" width="600">
 
 ## Quick Start
+
+Choose one of the following startup modes.
+
+### Option 1: Docker Compose (Recommended)
+
+Start all services (SQL Server, API, UI):
+
+```bash
+docker compose up -d --build
+```
+
+Open:
+
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:5095
+- Swagger: http://localhost:5095/swagger
+
+Stop services:
+
+```bash
+docker compose down
+```
+
+### Option 2: Local Development (Fast Iteration)
+
+#### Prerequisites
+
+- .NET 10 SDK
+- Node.js 20+
+- Docker (for local SQL Server)
+
+#### 1) Start database only
+
+```bash
+docker compose up -d db
+```
+
+#### 2) Start backend API
+
+```bash
+cd backend/FitnessTrackerAPI/FitnessTrackerAPI
+dotnet restore
+dotnet run
+```
+
+#### 3) Start frontend
+
+```bash
+cd frontend/fitness-tracker-ui
+npm install
+npm run dev
+```
+
+Open:
+
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:5095
+- Swagger: http://localhost:5095/swagger
 
 ## API
 
