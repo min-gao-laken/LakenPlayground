@@ -979,6 +979,8 @@ body {
   textarea,
   select {
     width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     border-radius: 1.25rem;
     border: 1px solid rgba(148, 163, 184, 0.2);
     background: #f8fafc;

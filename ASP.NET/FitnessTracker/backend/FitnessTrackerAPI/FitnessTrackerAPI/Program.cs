@@ -15,6 +15,8 @@ using System.Data.Common;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddHttpClient();
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -62,6 +64,7 @@ builder.Services.AddScoped<FitnessTrackerAPI.Repositories.IExerciseRepository, F
 builder.Services.AddScoped<FitnessTrackerAPI.Services.IExerciseService, FitnessTrackerAPI.Services.ExerciseService>();
 builder.Services.AddScoped<FitnessTrackerAPI.Repositories.ISetRecordRepository, FitnessTrackerAPI.Repositories.SetRecordRepository>();
 builder.Services.AddScoped<FitnessTrackerAPI.Services.ISetRecordService, FitnessTrackerAPI.Services.SetRecordService>();
+builder.Services.AddScoped<ITrainingPlanRecommendationService, TrainingPlanRecommendationService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 var jwtKey = builder.Configuration["Jwt:Key"] ?? "dev-secret-key-please-change";
