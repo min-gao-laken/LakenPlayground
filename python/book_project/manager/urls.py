@@ -1,37 +1,66 @@
 ﻿from django.urls import path, re_path
-from manager import views
+
+from manager.views.analytics import AnalyticsOverviewView
+from manager.views.auth import ApiLoginView, CurrentManagerView, LogoutView
+from manager.views.catalog import (
+    AuthorCollectionView,
+    AuthorDetailView,
+    BookCollectionView,
+    BookDetailView,
+    BorrowRecordCollectionView,
+    BorrowRecordDetailView,
+    PublisherCollectionView,
+    PublisherDetailView,
+)
+from manager.views.pages import (
+    AuthorCreatePageView,
+    AuthorDeletePageView,
+    AuthorEditPageView,
+    AuthorListPageView,
+    BookCreatePageView,
+    BookDeletePageView,
+    BookEditPageView,
+    BookListPageView,
+    IndexView,
+    ManagerLoginPageView,
+    PublisherCreatePageView,
+    PublisherDeletePageView,
+    PublisherEditPageView,
+    PublisherListPageView,
+)
 
 
 urlpatterns = [
-    re_path(r'^$', views.index),
+    re_path(r'^$', IndexView.as_view()),
 
-    path('login/', views.manager_login),
-    path('api/login/', views.api_login),
-    path('api/me/', views.api_me),
-    path('api/publishers/', views.api_publishers),
-    path('api/publishers/<int:publisher_id>/', views.api_publisher_detail),
-    path('api/books/', views.api_books),
-    path('api/books/<int:book_id>/', views.api_book_detail),
-    path('api/authors/', views.api_authors),
-    path('api/authors/<int:author_id>/', views.api_author_detail),
-    path('api/borrow-records/', views.api_borrow_records),
-    path('api/borrow-records/<int:record_id>/', views.api_borrow_record_detail),
-    path('api/analytics/overview/', views.api_analytics_overview),
+    path('login/', ManagerLoginPageView.as_view()),
+    path('api/login/', ApiLoginView.as_view()),
+    path('api/me/', CurrentManagerView.as_view()),
+    path('api/publishers/', PublisherCollectionView.as_view()),
+    path('api/publishers/<int:publisher_id>/', PublisherDetailView.as_view()),
+    path('api/books/', BookCollectionView.as_view()),
+    path('api/books/<int:book_id>/', BookDetailView.as_view()),
+    path('api/authors/', AuthorCollectionView.as_view()),
+    path('api/authors/<int:author_id>/', AuthorDetailView.as_view()),
+    path('api/borrow-records/', BorrowRecordCollectionView.as_view()),
+    path('api/borrow-records/<int:record_id>/',
+         BorrowRecordDetailView.as_view()),
+    path('api/analytics/overview/', AnalyticsOverviewView.as_view()),
 
-    path('add_publisher/', views.add_publisher),
-    path('publisher_list/', views.publisher_list),
-    path('edit_publisher/', views.edit_publisher),
-    path('delete_publisher/', views.delete_publisher),
+    path('add_publisher/', PublisherCreatePageView.as_view()),
+    path('publisher_list/', PublisherListPageView.as_view()),
+    path('edit_publisher/', PublisherEditPageView.as_view()),
+    path('delete_publisher/', PublisherDeletePageView.as_view()),
 
-    path('add_book/', views.add_book),
-    path('book_list/', views.book_list),
-    path('edit_book/', views.edit_book),
-    path('delete_book/', views.delete_book),
+    path('add_book/', BookCreatePageView.as_view()),
+    path('book_list/', BookListPageView.as_view()),
+    path('edit_book/', BookEditPageView.as_view()),
+    path('delete_book/', BookDeletePageView.as_view()),
 
-    path('add_author/', views.add_author),
-    path('author_list/', views.author_list),
-    path('edit_author/', views.edit_author),
-    path('delete_author/', views.delete_author),
+    path('add_author/', AuthorCreatePageView.as_view()),
+    path('author_list/', AuthorListPageView.as_view()),
+    path('edit_author/', AuthorEditPageView.as_view()),
+    path('delete_author/', AuthorDeletePageView.as_view()),
 
-    path('logout/', views.logout),
+    path('logout/', LogoutView.as_view()),
 ]
