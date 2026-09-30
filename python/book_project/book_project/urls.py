@@ -19,7 +19,7 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, Sp
 
 urlpatterns = [
     path('circulation/', include('circulation.urls')),
-    path('playground/', include('playground.urls')),
+    # path('playground/', include('playground.urls')),
     path('', include('manager.urls')),
 
     # Swagger/OpenAPI schema and documentation views

@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'manager.apps.ManagerConfig',
     'circulation.apps.CirculationConfig',
-    'playground.apps.PlaygroundConfig',
+    # 'playground.apps.PlaygroundConfig',
 ]
 
 MIDDLEWARE = [
