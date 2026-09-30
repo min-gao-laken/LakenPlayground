@@ -2,7 +2,8 @@ import csv
 
 from django.http import HttpResponse, JsonResponse
 from django.utils import timezone
-from django.views import View
+from rest_framework.views import APIView
+from rest_framework.response import Response
 
 from circulation.services.loans import CirculationError, borrow_book, return_loan
 from circulation.services.recommendations import get_recommendations

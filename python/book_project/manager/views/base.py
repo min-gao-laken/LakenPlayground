@@ -1,12 +1,12 @@
 import json
 from django.http import JsonResponse
 from django.utils.decorators import method_decorator
-from django.views import View
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.views import APIView
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class JsonView(View):
+class JsonView(APIView):
     def http_method_not_allowed(self, request, *args, **kwargs):
         return JsonResponse({'detail': 'Method not allowed'}, status=405)
 
