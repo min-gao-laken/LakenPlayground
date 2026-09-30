@@ -5,7 +5,6 @@ import time
 from django.db import transaction
 from django.db.models import Count, Q
 from django.http import JsonResponse
-from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 
 from circulation.models import Loan
@@ -34,8 +33,10 @@ def api_drill_tasks(request):
             page_size = 10
         page_size = min(page_size, 100)
 
-        allowed_order_fields = {"id", "title", "topic", "status", "created_at", "updated_at"}
-        normalized_order_field = ordering[1:] if ordering.startswith("-") else ordering
+        allowed_order_fields = {"id", "title", "topic",
+                                "status", "created_at", "updated_at"}
+        normalized_order_field = ordering[1:] if ordering.startswith(
+            "-") else ordering
         if normalized_order_field not in allowed_order_fields:
             return JsonResponse({"detail": "invalid ordering field"}, status=400)
 
@@ -91,7 +92,8 @@ def api_drill_tasks(request):
         if not status:
             return JsonResponse({"detail": "status is required"}, status=400)
 
-        task = PracticeTask.objects.create(title=title, topic=topic, status=status)
+        task = PracticeTask.objects.create(
+            title=title, topic=topic, status=status)
         return JsonResponse(_task_to_dict(task), status=201)
     return JsonResponse({"detail": "Method not allowed"}, status=405)
 
@@ -162,7 +164,8 @@ def api_concurrency_setup(request):
     if initial_stock < 0:
         return JsonResponse({"detail": "stock must be >= 0"}, status=400)
 
-    item, _created = ConcurrencyLabItem.objects.get_or_create(name=name, defaults={"stock": initial_stock})
+    item, _created = ConcurrencyLabItem.objects.get_or_create(
+        name=name, defaults={"stock": initial_stock})
     item.stock = initial_stock
     item.save(update_fields=["stock", "updated_at"])
     ConcurrencyLabEvent.objects.filter(item=item).delete()
@@ -187,7 +190,8 @@ def api_student_concurrency_setup(request):
     if initial_stock < 0:
         return JsonResponse({"detail": "stock must be >= 0"}, status=400)
 
-    item, _created = ConcurrencyLabItem.objects.get_or_create(name=name, defaults={"stock": initial_stock})
+    item, _created = ConcurrencyLabItem.objects.get_or_create(
+        name=name, defaults={"stock": initial_stock})
     item.stock = initial_stock
     item.save(update_fields=["stock", "updated_at"])
     ConcurrencyLabEvent.objects.filter(item=item).delete()
@@ -215,7 +219,8 @@ def api_student_concurrency_borrow_unlocked(request):
     if item_id <= 0:
         return JsonResponse({"detail": "item_id must be a positive integer"}, status=400)
 
-    _event, response = _borrow_without_lock(item_id=item_id, qty=qty, actor=actor, delay_ms=delay_ms)
+    _event, response = _borrow_without_lock(
+        item_id=item_id, qty=qty, actor=actor, delay_ms=delay_ms)
     return response
 
 
@@ -234,10 +239,13 @@ def api_student_concurrency_borrow_locked(request):
     if item_id <= 0:
         return JsonResponse({"detail": "item_id must be a positive integer"}, status=400)
 
-    _event, response = _borrow_with_lock(item_id=item_id, qty=qty, actor=actor, delay_ms=delay_ms)
+    _event, response = _borrow_with_lock(
+        item_id=item_id, qty=qty, actor=actor, delay_ms=delay_ms)
     return response
 
 # state：返回当前库存 + 最近日志
+
+
 def api_student_concurrency_state(request):
     if request.method != "GET":
         return JsonResponse({"detail": "Method not allowed"}, status=405)
@@ -349,7 +357,8 @@ def api_concurrency_borrow_unlocked(request):
     if item_id <= 0:
         return JsonResponse({"detail": "item_id must be a positive integer"}, status=400)
 
-    _event, response = _borrow_without_lock(item_id=item_id, qty=qty, actor=actor, delay_ms=delay_ms)
+    _event, response = _borrow_without_lock(
+        item_id=item_id, qty=qty, actor=actor, delay_ms=delay_ms)
     return response
 
 
@@ -367,7 +376,8 @@ def api_concurrency_borrow_locked(request):
     if item_id <= 0:
         return JsonResponse({"detail": "item_id must be a positive integer"}, status=400)
 
-    _event, response = _borrow_with_lock(item_id=item_id, qty=qty, actor=actor, delay_ms=delay_ms)
+    _event, response = _borrow_with_lock(
+        item_id=item_id, qty=qty, actor=actor, delay_ms=delay_ms)
     return response
 
 
@@ -446,10 +456,6 @@ def _safe_int(value, default_value):
         return default_value
 
 
-def index(request):
-    return render(request, "playground/index.html", {"roadmap": ROADMAP})
-
-
 def api_roadmap(request):
     if request.method != "GET":
         return JsonResponse({"detail": "Method not allowed"}, status=405)
@@ -486,7 +492,8 @@ def api_tasks(request):
         if status not in PracticeTask.Status.values:
             return JsonResponse({"detail": "invalid status"}, status=400)
 
-        task = PracticeTask.objects.create(title=title, topic=topic, notes=notes, status=status)
+        task = PracticeTask.objects.create(
+            title=title, topic=topic, notes=notes, status=status)
         return JsonResponse(_task_to_dict(task), status=201)
 
     return JsonResponse({"detail": "Method not allowed"}, status=405)
@@ -577,7 +584,8 @@ def _user_cf_debug(reader_id, top_k_users, limit):
             }
         )
 
-    similarities.sort(key=lambda item: (-item["similarity"], item["reader_id"]))
+    similarities.sort(
+        key=lambda item: (-item["similarity"], item["reader_id"]))
     neighbors = similarities[:top_k_users]
     score_map = {}
     support_map = {}
@@ -609,9 +617,11 @@ def _user_cf_debug(reader_id, top_k_users, limit):
     else:
         ranked_book_ids = sorted(
             score_map.keys(),
-            key=lambda book_id: (-score_map[book_id], -support_map[book_id], book_id),
+            key=lambda book_id: (-score_map[book_id], -
+                                 support_map[book_id], book_id),
         )[:limit]
-        book_map = {book.id: book for book in Book.objects.filter(id__in=ranked_book_ids)}
+        book_map = {book.id: book for book in Book.objects.filter(
+            id__in=ranked_book_ids)}
         results = []
         for book_id in ranked_book_ids:
             book = book_map.get(book_id)
@@ -646,7 +656,8 @@ def api_recommendation_lab(request):
     top_k_users = max(1, min(_safe_int(request.GET.get("top_k_users"), 5), 50))
     limit = max(1, min(_safe_int(request.GET.get("limit"), 5), 30))
 
-    debug_result = _user_cf_debug(reader_id=reader_id, top_k_users=top_k_users, limit=limit)
+    debug_result = _user_cf_debug(
+        reader_id=reader_id, top_k_users=top_k_users, limit=limit)
     return JsonResponse(
         {
             "reader_id": reader_id,

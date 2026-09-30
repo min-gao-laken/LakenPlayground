@@ -22,6 +22,25 @@ class JsonView(View):
         return payload, None
 
 
+class ApiRootView(JsonView):
+    def get(self, request):
+        return JsonResponse(
+            {
+                'service': 'book-project-api',
+                'status': 'ok',
+                'endpoints': {
+                    'login': '/api/login/',
+                    'current_manager': '/api/me/',
+                    'books': '/api/books/',
+                    'publishers': '/api/publishers/',
+                    'authors': '/api/authors/',
+                    'borrow_records': '/api/borrow-records/',
+                    'analytics': '/api/analytics/overview/',
+                },
+            }
+        )
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class LoginRequiredJsonView(JsonView):
     def dispatch(self, request, *args, **kwargs):
